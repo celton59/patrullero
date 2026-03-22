@@ -134,62 +134,97 @@ import '../styles/global.css';
       .mobile-nav { transform: translateY(100%); transition: transform 0.3s ease; }
       .mobile-nav.visible { transform: translateY(0); }
 
-      /* Scroll-based header */
-      .header-bg { background: transparent; transition: background 0.3s ease, box-shadow 0.3s ease; }
-      .header-bg.scrolled { background: rgba(2,6,23,0.95); box-shadow: 0 1px 0 rgba(51,65,85,0.3); backdrop-filter: blur(12px); }
+      /* Apple-style pill nav */
+      .pill-nav {
+        background: rgba(10,10,10,0.65);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 4px 30px rgba(0,0,0,0.3), inset 0 0.5px 0 rgba(255,255,255,0.06);
+        transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+      }
+      .pill-nav.scrolled {
+        background: rgba(10,10,10,0.85);
+        border-color: rgba(255,255,255,0.1);
+        box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 0.5px 0 rgba(255,255,255,0.08);
+      }
+      .pill-nav a.nav-link {
+        position: relative;
+        padding: 6px 12px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+      }
+      .pill-nav a.nav-link:hover {
+        background: rgba(255,255,255,0.08);
+      }
+      .pill-cta {
+        background: rgba(33,89,226,0.9);
+        backdrop-filter: blur(8px);
+        transition: all 0.2s ease;
+      }
+      .pill-cta:hover {
+        background: rgba(33,89,226,1);
+        box-shadow: 0 0 20px rgba(33,89,226,0.4);
+      }
     </style>
   </head>
 
   <body class="bg-grid min-h-screen antialiased">
 
-    <!-- ============ HEADER ============ -->
-    <header id="header" class="header-bg fixed top-0 left-0 right-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 lg:h-20">
+    <!-- ============ HEADER — Apple Pill Nav ============ -->
+    <header id="header" class="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+      <div class="flex justify-center pt-4 px-4">
+        <div id="pill" class="pill-nav pointer-events-auto rounded-full px-2 py-1.5 flex items-center gap-1">
           <!-- Logo -->
-          <a href="#" class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#2159E2] to-[#5A2177] flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <a href="#" class="flex items-center gap-2 pl-2 pr-3">
+            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-[#2159E2] to-[#5A2177] flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
               </svg>
             </div>
-            <span class="text-lg font-extrabold tracking-wider uppercase text-white">Patrullero</span>
+            <span class="text-sm font-bold tracking-wide uppercase text-white hidden sm:inline">Patrullero</span>
           </a>
 
-          <!-- Desktop nav -->
-          <nav class="hidden lg:flex items-center gap-8">
-            <a href="#features" class="text-sm font-medium text-slate-400 hover:text-white transition-colors uppercase tracking-wider">Funciones</a>
-            <a href="#plataforma" class="text-sm font-medium text-slate-400 hover:text-white transition-colors uppercase tracking-wider">Plataforma</a>
-            <a href="#testimonios" class="text-sm font-medium text-slate-400 hover:text-white transition-colors uppercase tracking-wider">Testimonios</a>
-            <a href="#precio" class="text-sm font-medium text-slate-400 hover:text-white transition-colors uppercase tracking-wider">Precio</a>
-            <a href="#faq" class="text-sm font-medium text-slate-400 hover:text-white transition-colors uppercase tracking-wider">FAQ</a>
+          <!-- Divider -->
+          <div class="hidden lg:block w-px h-5 bg-white/10"></div>
+
+          <!-- Desktop nav links -->
+          <nav class="hidden lg:flex items-center gap-0.5">
+            <a href="#features" class="nav-link text-[13px] font-medium text-slate-400 hover:text-white transition-colors">Funciones</a>
+            <a href="#plataforma" class="nav-link text-[13px] font-medium text-slate-400 hover:text-white transition-colors">Plataforma</a>
+            <a href="#testimonios" class="nav-link text-[13px] font-medium text-slate-400 hover:text-white transition-colors">Testimonios</a>
+            <a href="#precio" class="nav-link text-[13px] font-medium text-slate-400 hover:text-white transition-colors">Precio</a>
+            <a href="#faq" class="nav-link text-[13px] font-medium text-slate-400 hover:text-white transition-colors">FAQ</a>
           </nav>
 
-          <!-- Desktop CTA -->
-          <div class="hidden lg:flex items-center gap-4">
-            <a href="#precio" class="bg-[#2159E2] hover:bg-[#2159E2]/80 text-white text-sm font-bold uppercase tracking-widest px-6 py-2.5 rounded-lg transition-all">
-              Empezar
-            </a>
-          </div>
+          <!-- Divider -->
+          <div class="hidden lg:block w-px h-5 bg-white/10"></div>
+
+          <!-- CTA -->
+          <a href="#precio" class="pill-cta hidden lg:flex items-center text-white text-[13px] font-bold px-4 py-1.5 rounded-full">
+            Empezar
+          </a>
 
           <!-- Mobile burger -->
-          <button id="menu-toggle" class="lg:hidden p-2 text-slate-400 hover:text-white" aria-label="Abrir menú">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <button id="menu-toggle" class="lg:hidden p-2 text-slate-400 hover:text-white rounded-full hover:bg-white/10 transition-colors" aria-label="Abrir menú">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path id="burger-icon" stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </button>
         </div>
       </div>
 
-      <!-- Mobile menu -->
-      <div id="mobile-menu" class="lg:hidden hidden bg-slate-950/98 border-t border-slate-800">
-        <div class="px-4 py-6 space-y-4">
-          <a href="#features" class="block text-sm font-medium text-slate-300 hover:text-white uppercase tracking-wider py-2">Funciones</a>
-          <a href="#plataforma" class="block text-sm font-medium text-slate-300 hover:text-white uppercase tracking-wider py-2">Plataforma</a>
-          <a href="#testimonios" class="block text-sm font-medium text-slate-300 hover:text-white uppercase tracking-wider py-2">Testimonios</a>
-          <a href="#precio" class="block text-sm font-medium text-slate-300 hover:text-white uppercase tracking-wider py-2">Precio</a>
-          <a href="#faq" class="block text-sm font-medium text-slate-300 hover:text-white uppercase tracking-wider py-2">FAQ</a>
-          <a href="#precio" class="block bg-[#2159E2] hover:bg-[#2159E2]/80 text-white text-sm font-bold uppercase tracking-widest px-6 py-3 rounded-lg text-center mt-4">Empezar Ahora</a>
+      <!-- Mobile menu (drops from pill) -->
+      <div id="mobile-menu" class="lg:hidden hidden pointer-events-auto">
+        <div class="mx-4 mt-2 rounded-2xl bg-[rgba(10,10,10,0.9)] backdrop-blur-xl border border-white/10 shadow-2xl p-4 space-y-1">
+          <a href="#features" class="block text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-xl px-4 py-2.5 transition-colors">Funciones</a>
+          <a href="#plataforma" class="block text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-xl px-4 py-2.5 transition-colors">Plataforma</a>
+          <a href="#testimonios" class="block text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-xl px-4 py-2.5 transition-colors">Testimonios</a>
+          <a href="#precio" class="block text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-xl px-4 py-2.5 transition-colors">Precio</a>
+          <a href="#faq" class="block text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-xl px-4 py-2.5 transition-colors">FAQ</a>
+          <div class="pt-2 border-t border-white/5">
+            <a href="#precio" class="block pill-cta text-white text-sm font-bold px-6 py-3 rounded-xl text-center">Empezar Ahora</a>
+          </div>
         </div>
       </div>
     </header>
@@ -1031,10 +1066,10 @@ import '../styles/global.css';
 
     <!-- ============ SCRIPTS ============ -->
     <script>
-      // Header scroll effect
-      const header = document.getElementById('header');
+      // Pill nav scroll effect
+      const pill = document.getElementById('pill');
       window.addEventListener('scroll', () => {
-        header?.classList.toggle('scrolled', window.scrollY > 20);
+        pill?.classList.toggle('scrolled', window.scrollY > 20);
       }, { passive: true });
 
       // Mobile menu toggle
