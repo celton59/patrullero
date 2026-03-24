@@ -604,7 +604,12 @@ import '../styles/global.css';
 
       <!-- ============ YOUR DAY TIMELINE ============ -->
       <section class="py-12 lg:py-16 relative overflow-hidden">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Road background -->
+        <div class="absolute inset-0 z-0">
+          <img src="/road-bg.jpg" alt="" class="w-full h-full object-cover" style="opacity: 0.15;" />
+          <div class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]"></div>
+        </div>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div class="text-center mb-10 animate-on-scroll">
             <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white mb-3">
               Tu camino a la <span class="bg-gradient-to-r from-[#2159E2] to-[#5A2177] bg-clip-text text-transparent">plaza</span>
