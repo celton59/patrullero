@@ -286,10 +286,76 @@ import '../styles/global.css';
         background: rgba(33,89,226,1);
         box-shadow: 0 0 20px rgba(33,89,226,0.4);
       }
+
+      /* ===== 1. SIREN PULSE ===== */
+      @keyframes siren-pulse {
+        0%, 100% { background: radial-gradient(ellipse at 30% 50%, rgba(33,89,226,0.15) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(220,38,38,0.08) 0%, transparent 60%); }
+        50% { background: radial-gradient(ellipse at 30% 50%, rgba(220,38,38,0.08) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(33,89,226,0.15) 0%, transparent 60%); }
+      }
+      .siren-bg { animation: siren-pulse 4s ease-in-out infinite; position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+
+      /* ===== 2. CLASSIFIED STAMP ===== */
+      .classified-stamp { position: relative; }
+      .classified-stamp::before {
+        content: 'CONFIDENCIAL';
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
+        font-size: 4rem; font-weight: 900; color: rgba(220,38,38,0.06);
+        letter-spacing: 0.3em; text-transform: uppercase; pointer-events: none; z-index: 0;
+        opacity: 1; transition: opacity 0.8s ease;
+      }
+      .classified-stamp.visible::before { opacity: 0; }
+
+      /* ===== 4. BADGE CARD (PRICING) ===== */
+      .badge-card {
+        position: relative;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        border: 2px solid rgba(33,89,226,0.5);
+        border-radius: 50% 50% 50% 50% / 35% 35% 65% 65%;
+        padding: 3rem 2.5rem 2.5rem;
+        overflow: hidden;
+      }
+      .badge-card::before {
+        content: ''; position: absolute; inset: 4px;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 50% 50% 50% 50% / 35% 35% 65% 65%;
+        pointer-events: none;
+      }
+      .badge-card:hover { border-color: rgba(33,89,226,0.8); box-shadow: 0 0 40px rgba(33,89,226,0.2); }
+      .badge-shine {
+        position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.03) 50%, transparent 60%);
+        transition: transform 0.6s ease;
+      }
+      .badge-card:hover .badge-shine { transform: translateX(30%) translateY(30%); }
+
+      /* ===== 6. WALKIE-TALKIE TESTIMONIALS ===== */
+      .walkie-card { position: relative; background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%); border: 1px solid rgba(255,255,255,0.06); border-radius: 1rem; padding: 1.5rem; }
+      .walkie-card::before { content: ''; position: absolute; top: 0.75rem; right: 0.75rem; width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.6); animation: radio-blink 2s ease-in-out infinite; }
+      @keyframes radio-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+      .walkie-card .radio-wave { display: flex; align-items: center; gap: 2px; margin-bottom: 0.75rem; }
+      .walkie-card .radio-wave span { display: block; width: 3px; border-radius: 2px; background: #2159E2; }
+      @keyframes wave-anim { 0%, 100% { height: 8px; } 50% { height: 16px; } }
     </style>
   </head>
 
   <body class="bg-grid min-h-screen antialiased">
+
+    <!-- Spain map overlay with active study points -->
+    <div class="fixed inset-0 pointer-events-none z-0 opacity-30">
+      <svg viewBox="0 0 800 700" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
+        <!-- Simplified Spain outline -->
+        <path d="M280,120 L320,100 L380,90 L440,95 L500,80 L540,90 L580,110 L600,140 L620,160 L640,200 L630,240 L600,280 L580,320 L560,360 L540,380 L500,400 L460,420 L420,430 L380,420 L340,400 L300,380 L270,350 L250,310 L240,270 L250,230 L260,190 L270,150 Z" fill="none" stroke="rgba(33,89,226,0.08)" stroke-width="1"/>
+        <!-- Study points (cities) -->
+        <circle cx="380" cy="310" r="3" fill="#2159E2" opacity="0.6"><animate attributeName="r" values="3;5;3" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="560" cy="280" r="2.5" fill="#2159E2" opacity="0.5"><animate attributeName="r" values="2.5;4.5;2.5" dur="3.5s" repeatCount="indefinite"/></circle>
+        <circle cx="310" cy="250" r="2" fill="#2159E2" opacity="0.4"><animate attributeName="r" values="2;4;2" dur="4s" repeatCount="indefinite"/></circle>
+        <circle cx="480" cy="200" r="2.5" fill="#2159E2" opacity="0.5"><animate attributeName="r" values="2.5;4.5;2.5" dur="2.8s" repeatCount="indefinite"/></circle>
+        <circle cx="420" cy="380" r="2" fill="#2159E2" opacity="0.4"><animate attributeName="r" values="2;4;2" dur="3.2s" repeatCount="indefinite"/></circle>
+        <circle cx="340" cy="180" r="2" fill="#5A2177" opacity="0.4"><animate attributeName="r" values="2;3.5;2" dur="3.8s" repeatCount="indefinite"/></circle>
+        <circle cx="520" cy="340" r="2.5" fill="#5A2177" opacity="0.5"><animate attributeName="r" values="2.5;4;2.5" dur="3.3s" repeatCount="indefinite"/></circle>
+        <circle cx="440" cy="150" r="2" fill="#2159E2" opacity="0.3"><animate attributeName="r" values="2;3.5;2" dur="4.2s" repeatCount="indefinite"/></circle>
+      </svg>
+    </div>
 
     <!-- ============ FLASHLIGHT BACKGROUND IMAGES (revealed by beam) ============ -->
     <div id="flashlight-bg" class="flashlight-bg">
@@ -345,6 +411,13 @@ import '../styles/global.css';
           <!-- Divider -->
           <div class="hidden lg:block w-px h-5 bg-white/10"></div>
 
+          <!-- Live counter -->
+          <div class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 mr-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="live-counter" class="text-[11px] font-bold text-emerald-400">347</span>
+            <span class="text-[10px] text-emerald-400/70">online</span>
+          </div>
+
           <!-- CTA -->
           <a href="#precio" class="pill-cta hidden lg:flex items-center text-white text-[13px] font-bold px-4 py-1.5 rounded-full">
             Empezar
@@ -378,11 +451,12 @@ import '../styles/global.css';
 
       <!-- ============ HERO ============ -->
       <section class="relative pt-28 lg:pt-36 pb-16 lg:pb-24 overflow-hidden">
+        <div class="siren-bg"></div>
         <!-- Glow background -->
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#2159E2]/10 rounded-full blur-[120px] pointer-events-none"></div>
         <div class="absolute top-20 right-0 w-[400px] h-[400px] bg-[#5A2177]/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <!-- Left -->
             <div>
@@ -548,8 +622,48 @@ import '../styles/global.css';
         </div>
       </section>
 
+      <!-- ============ YOUR DAY TIMELINE ============ -->
+      <section class="py-12 lg:py-16 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-10 animate-on-scroll">
+            <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white mb-3">
+              Tu camino a la <span class="bg-gradient-to-r from-[#2159E2] to-[#5A2177] bg-clip-text text-transparent">plaza</span>
+            </h2>
+            <p class="text-slate-400 max-w-md mx-auto text-sm">Así de fácil es empezar</p>
+          </div>
+          <div class="grid md:grid-cols-3 gap-6 lg:gap-10">
+            <div class="text-center group animate-on-scroll">
+              <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#2159E2]/10 border border-[#2159E2]/20 flex items-center justify-center group-hover:bg-[#2159E2]/20 group-hover:scale-110 transition-all duration-300">
+                <span class="text-2xl">📝</span>
+              </div>
+              <div class="text-xs font-bold text-[#2159E2] uppercase tracking-widest mb-2">Paso 1</div>
+              <h3 class="text-base font-bold text-white mb-1">Regístrate gratis</h3>
+              <p class="text-xs text-slate-500">Sin tarjeta, sin compromiso. En 30 segundos.</p>
+            </div>
+            <div class="text-center group animate-on-scroll">
+              <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#5A2177]/10 border border-[#5A2177]/20 flex items-center justify-center group-hover:bg-[#5A2177]/20 group-hover:scale-110 transition-all duration-300">
+                <span class="text-2xl">🎯</span>
+              </div>
+              <div class="text-xs font-bold text-[#5A2177] uppercase tracking-widest mb-2">Paso 2</div>
+              <h3 class="text-base font-bold text-white mb-1">Elige tu oposición</h3>
+              <p class="text-xs text-slate-500">Policía Nacional. Contenido 100% específico.</p>
+            </div>
+            <div class="text-center group animate-on-scroll">
+              <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/20 group-hover:scale-110 transition-all duration-300">
+                <span class="text-2xl">🚀</span>
+              </div>
+              <div class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">Paso 3</div>
+              <h3 class="text-base font-bold text-white mb-1">Empieza a estudiar</h3>
+              <p class="text-xs text-slate-500">Tests, juegos, repasos. Tu plaza más cerca cada día.</p>
+            </div>
+          </div>
+          <!-- Connecting line (desktop) -->
+          <div class="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent" style="margin-top: 20px;"></div>
+        </div>
+      </section>
+
       <!-- ============ FEATURES — APPLE BENTO GRID ============ -->
-      <section id="features" class="py-12 lg:py-16">
+      <section id="features" class="py-12 lg:py-16 classified-stamp">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-10 apple-feature" data-apple>
             <h2 class="text-3xl sm:text-4xl lg:text-6xl font-black uppercase tracking-tight text-white mb-4">
@@ -670,7 +784,7 @@ import '../styles/global.css';
       </section>
 
       <!-- ============ PLATFORM SHOWCASE ============ -->
-      <section id="plataforma" class="py-12 lg:py-16 relative overflow-hidden">
+      <section id="plataforma" class="py-12 lg:py-16 relative overflow-hidden classified-stamp">
         <!-- Glow -->
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[#2159E2]/8 rounded-full blur-[120px] pointer-events-none"></div>
 
@@ -686,7 +800,7 @@ import '../styles/global.css';
           <div class="relative animate-on-scroll">
             <!-- Desktop screenshot -->
             <div class="relative max-w-4xl mx-auto">
-              <div class="rounded-xl overflow-hidden shadow-2xl shadow-black/40 ring-1 ring-white/10">
+              <div class="relative rounded-xl overflow-hidden shadow-2xl shadow-black/40 ring-1 ring-white/10">
                 <!-- Browser chrome -->
                 <div class="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a]">
                   <div class="flex gap-1.5">
@@ -756,6 +870,10 @@ import '../styles/global.css';
                   </div>
                 </div>
               </div>
+              <!-- Post-it note -->
+              <div class="absolute -top-3 right-8 w-28 bg-yellow-300 p-2.5 rounded shadow-lg transform rotate-3 z-20 hidden lg:block">
+                <p class="text-[9px] text-yellow-900 font-bold leading-tight">📌 Turno de noche<br/>22:00 - 06:00<br/>Sector B-4</p>
+              </div>
             </div>
 
             <!-- Mobile screenshot (overlapping bottom-right) -->
@@ -807,7 +925,7 @@ import '../styles/global.css';
       </section>
 
       <!-- ============ TESTIMONIALS ============ -->
-      <section id="testimonios" class="py-12 lg:py-16">
+      <section id="testimonios" class="py-12 lg:py-16 classified-stamp">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-10 animate-on-scroll">
             <div class="inline-flex items-center gap-2 px-4 py-2 border-0 rounded-full bg-[#2159E2]/10 mb-6">
@@ -820,7 +938,14 @@ import '../styles/global.css';
 
           <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Testimonial 1 -->
-            <div class="bg-slate-900/50 border-0 rounded-xl p-6">
+            <div class="walkie-card">
+              <div class="radio-wave">
+                <span style="height:8px; animation: wave-anim 0.8s ease-in-out infinite;"></span>
+                <span style="height:12px; animation: wave-anim 0.8s ease-in-out 0.1s infinite;"></span>
+                <span style="height:16px; animation: wave-anim 0.8s ease-in-out 0.2s infinite;"></span>
+                <span style="height:12px; animation: wave-anim 0.8s ease-in-out 0.3s infinite;"></span>
+                <span style="height:8px; animation: wave-anim 0.8s ease-in-out 0.4s infinite;"></span>
+              </div>
               <div class="flex gap-1 mb-4">
                 <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                 <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
@@ -829,7 +954,8 @@ import '../styles/global.css';
                 <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
               </div>
               <p class="text-sm text-slate-300 leading-relaxed mb-6">"Antes perdía media hora al inicio de cada turno revisando partes en papel. Ahora lo tengo todo en el móvil antes de salir de vestuario. Imprescindible."</p>
-              <div class="flex items-center gap-3">
+              <div class="text-[10px] text-slate-600 italic mt-2">— Transmisión verificada ✓</div>
+              <div class="flex items-center gap-3 mt-4">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#2159E2] to-[#5A2177] flex items-center justify-center text-white font-bold text-sm">AG</div>
                 <div>
                   <div class="text-sm font-bold text-white">Agente García</div>
@@ -839,7 +965,14 @@ import '../styles/global.css';
             </div>
 
             <!-- Testimonial 2 -->
-            <div class="bg-slate-900/50 border-0 rounded-xl p-6">
+            <div class="walkie-card">
+              <div class="radio-wave">
+                <span style="height:8px; animation: wave-anim 0.8s ease-in-out infinite;"></span>
+                <span style="height:12px; animation: wave-anim 0.8s ease-in-out 0.1s infinite;"></span>
+                <span style="height:16px; animation: wave-anim 0.8s ease-in-out 0.2s infinite;"></span>
+                <span style="height:12px; animation: wave-anim 0.8s ease-in-out 0.3s infinite;"></span>
+                <span style="height:8px; animation: wave-anim 0.8s ease-in-out 0.4s infinite;"></span>
+              </div>
               <div class="flex gap-1 mb-4">
                 <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                 <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
@@ -848,7 +981,8 @@ import '../styles/global.css';
                 <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
               </div>
               <p class="text-sm text-slate-300 leading-relaxed mb-6">"Como Inspector, poder ver en tiempo real dónde está cada patrulla y coordinar dispositivos desde el panel web ha cambiado por completo nuestra operativa."</p>
-              <div class="flex items-center gap-3">
+              <div class="text-[10px] text-slate-600 italic mt-2">— Transmisión verificada ✓</div>
+              <div class="flex items-center gap-3 mt-4">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#2159E2] to-[#5A2177] flex items-center justify-center text-white font-bold text-sm">IL</div>
                 <div>
                   <div class="text-sm font-bold text-white">Inspector López</div>
@@ -858,7 +992,14 @@ import '../styles/global.css';
             </div>
 
             <!-- Testimonial 3 -->
-            <div class="bg-slate-900/50 border-0 rounded-xl p-6">
+            <div class="walkie-card">
+              <div class="radio-wave">
+                <span style="height:8px; animation: wave-anim 0.8s ease-in-out infinite;"></span>
+                <span style="height:12px; animation: wave-anim 0.8s ease-in-out 0.1s infinite;"></span>
+                <span style="height:16px; animation: wave-anim 0.8s ease-in-out 0.2s infinite;"></span>
+                <span style="height:12px; animation: wave-anim 0.8s ease-in-out 0.3s infinite;"></span>
+                <span style="height:8px; animation: wave-anim 0.8s ease-in-out 0.4s infinite;"></span>
+              </div>
               <div class="flex gap-1 mb-4">
                 <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                 <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
@@ -867,13 +1008,45 @@ import '../styles/global.css';
                 <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
               </div>
               <p class="text-sm text-slate-300 leading-relaxed mb-6">"El chat cifrado nos da una tranquilidad que WhatsApp nunca pudo. Sabemos que nuestras comunicaciones de servicio están protegidas de verdad."</p>
-              <div class="flex items-center gap-3">
+              <div class="text-[10px] text-slate-600 italic mt-2">— Transmisión verificada ✓</div>
+              <div class="flex items-center gap-3 mt-4">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#2159E2] to-[#5A2177] flex items-center justify-center text-white font-bold text-sm">SM</div>
                 <div>
                   <div class="text-sm font-bold text-white">Subinspectora Martínez</div>
                   <div class="text-xs text-slate-500">CNP — UDYCO, Sevilla</div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ BEFORE VS AFTER ============ -->
+      <section class="py-12 lg:py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-10 animate-on-scroll">
+            <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white mb-3">
+              <span class="bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent">Sin REVOPOL</span> vs <span class="bg-gradient-to-r from-[#2159E2] to-[#5A2177] bg-clip-text text-transparent">Con REVOPOL</span>
+            </h2>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4 lg:gap-6">
+            <!-- BEFORE -->
+            <div class="bg-red-950/20 border border-red-500/10 rounded-2xl p-6 space-y-3">
+              <div class="flex items-center gap-2 mb-4"><div class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center"><span class="text-base">😩</span></div><span class="text-sm font-bold text-red-400 uppercase tracking-wider">Antes</span></div>
+              <div class="flex items-center gap-3 text-sm text-slate-400"><svg class="w-4 h-4 text-red-500/60 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg> PDFs desorganizados y apuntes perdidos</div>
+              <div class="flex items-center gap-3 text-sm text-slate-400"><svg class="w-4 h-4 text-red-500/60 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg> No sabes qué temas repasar</div>
+              <div class="flex items-center gap-3 text-sm text-slate-400"><svg class="w-4 h-4 text-red-500/60 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg> Estudias solo, sin feedback</div>
+              <div class="flex items-center gap-3 text-sm text-slate-400"><svg class="w-4 h-4 text-red-500/60 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg> Temario desactualizado o incompleto</div>
+              <div class="flex items-center gap-3 text-sm text-slate-400"><svg class="w-4 h-4 text-red-500/60 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg> Motivación que se apaga con el tiempo</div>
+            </div>
+            <!-- AFTER -->
+            <div class="bg-[#2159E2]/5 border border-[#2159E2]/10 rounded-2xl p-6 space-y-3">
+              <div class="flex items-center gap-2 mb-4"><div class="w-8 h-8 rounded-lg bg-[#2159E2]/20 flex items-center justify-center"><span class="text-base">🔥</span></div><span class="text-sm font-bold text-[#2159E2] uppercase tracking-wider">Después</span></div>
+              <div class="flex items-center gap-3 text-sm text-slate-300"><svg class="w-4 h-4 text-[#2159E2] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg> Todo organizado en un dashboard</div>
+              <div class="flex items-center gap-3 text-sm text-slate-300"><svg class="w-4 h-4 text-[#2159E2] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg> IA te dice qué repasar y cuándo</div>
+              <div class="flex items-center gap-3 text-sm text-slate-300"><svg class="w-4 h-4 text-[#2159E2] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg> Comunidad de opositores activa</div>
+              <div class="flex items-center gap-3 text-sm text-slate-300"><svg class="w-4 h-4 text-[#2159E2] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg> Temario BOE siempre actualizado</div>
+              <div class="flex items-center gap-3 text-sm text-slate-300"><svg class="w-4 h-4 text-[#2159E2] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg> Ranking, rachas y logros que enganchan</div>
             </div>
           </div>
         </div>
@@ -894,7 +1067,8 @@ import '../styles/global.css';
 
           <!-- Pricing card -->
           <div class="max-w-md mx-auto animate-on-scroll">
-            <div class="relative bg-slate-900/80 border-2 border-[#2159E2]/50 rounded-2xl p-8 lg:p-10 overflow-hidden">
+            <div class="badge-card">
+              <div class="badge-shine"></div>
               <!-- Popular badge -->
               <div class="absolute top-0 right-0 bg-gradient-to-r from-[#2159E2] to-[#5A2177] text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-bl-xl">
                 Popular
@@ -1160,6 +1334,13 @@ import '../styles/global.css';
           <p class="text-xs text-slate-600">&copy; 2026 REVOPOL®. Todos los derechos reservados.</p>
           <p class="text-xs text-slate-600">Hecho con ❤️ por policías para futuros policías.</p>
         </div>
+
+        <!-- Morse Easter Egg -->
+        <div class="mt-8 text-center" title="¿Puedes descifrar el mensaje?">
+          <p class="text-[10px] text-slate-800 font-mono tracking-[0.3em] hover:text-slate-600 transition-colors cursor-help select-none">
+            ·–·· ·– / ·–·· ·– ·–·–·– / –·–· ––– –· ··· · ––· ··– ·· ·–· ·– ···
+          </p>
+        </div>
       </div>
     </footer>
 
@@ -1411,6 +1592,29 @@ import '../styles/global.css';
           }
         });
       });
+
+      // Live counter (fluctuates randomly for social proof)
+      const liveEl = document.getElementById('live-counter');
+      if (liveEl) {
+        const base = 280 + Math.floor(Math.random() * 120);
+        liveEl.textContent = base;
+        setInterval(() => {
+          const current = parseInt(liveEl.textContent) || base;
+          const delta = Math.floor(Math.random() * 7) - 3; // -3 to +3
+          liveEl.textContent = Math.max(base - 50, Math.min(base + 80, current + delta));
+        }, 4000);
+      }
+
+      // Classified stamp: fade out watermark when section scrolls into view
+      const stampObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            stampObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
+      document.querySelectorAll('.classified-stamp').forEach(el => stampObserver.observe(el));
 
       // Anti-flicker: reveal body once fonts are loaded (or after 300ms safety timeout)
       const reveal = () => document.body.classList.add('ready');
