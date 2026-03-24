@@ -303,20 +303,13 @@ import '../styles/global.css';
         background: conic-gradient(
           from 0deg,
           transparent 0%,
-          rgba(33,89,226,0.5) 10%,
-          transparent 20%,
+          rgba(33,89,226,0.6) 8%,
+          transparent 16%,
           transparent 50%,
-          rgba(90,33,119,0.4) 60%,
-          transparent 70%
+          rgba(90,33,119,0.5) 58%,
+          transparent 66%
         );
         animation: border-glow-spin 4s linear infinite;
-      }
-      .webview-glow-border::after {
-        content: '';
-        position: absolute;
-        inset: 2px;
-        background: #0a0a0a;
-        border-radius: 0.65rem;
       }
 
       /* ===== 1. SIREN PULSE ===== */
@@ -531,27 +524,28 @@ import '../styles/global.css';
             <!-- Right: Browser mockup with 3D tilt + reflection + border glow -->
             <div class="relative animate-fade-up delay-300 hidden lg:block" style="perspective: 800px;">
               <div id="webview-tilt" class="relative" style="transform-style: preserve-3d; transition: transform 0.15s ease-out;">
-                <!-- Animated border glow -->
-                <div class="webview-glow-border absolute -inset-[2px] rounded-xl z-0"></div>
-                <!-- Browser frame -->
-                <div class="relative rounded-xl overflow-hidden shadow-2xl shadow-[#2159E2]/20 max-w-lg mx-auto z-10">
-                  <!-- Browser chrome -->
-                  <div class="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a]">
-                    <div class="flex gap-1.5">
-                      <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f57]"></div>
-                      <div class="w-2.5 h-2.5 rounded-full bg-[#febc2e]"></div>
-                      <div class="w-2.5 h-2.5 rounded-full bg-[#28c840]"></div>
-                    </div>
-                    <div class="flex-1 mx-3">
-                      <div class="bg-[#2a2a2a] rounded-lg px-3 py-1 flex items-center gap-2">
-                        <svg class="w-3 h-3 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
-                        <span class="text-[10px] text-slate-400 font-mono">revopol.com/campus-estudio</span>
+                <!-- Glow wrapper -->
+                <div class="webview-glow-border relative rounded-xl p-[2px] max-w-lg mx-auto">
+                  <!-- Browser frame (inner, covers the glow background) -->
+                  <div class="relative rounded-[10px] overflow-hidden shadow-2xl shadow-[#2159E2]/30 bg-[#1a1a1a]">
+                    <!-- Browser chrome -->
+                    <div class="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a]">
+                      <div class="flex gap-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f57]"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-[#febc2e]"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-[#28c840]"></div>
+                      </div>
+                      <div class="flex-1 mx-3">
+                        <div class="bg-[#2a2a2a] rounded-lg px-3 py-1 flex items-center gap-2">
+                          <svg class="w-3 h-3 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                          <span class="text-[10px] text-slate-400 font-mono">revopol.com/campus-estudio</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <!-- Real screenshot of Revopol campus -->
-                  <div class="relative bg-[#F8F9FC]" style="height: 380px; overflow: hidden;">
-                    <img src="/campus-screenshot.jpg" alt="REVOPOL Campus de Estudio" class="w-full h-auto" style="object-fit: cover; object-position: top;" loading="lazy" />
+                    <!-- Real screenshot of Revopol campus -->
+                    <div class="relative bg-[#F8F9FC]" style="height: 380px; overflow: hidden;">
+                      <img src="/campus-screenshot.jpg" alt="REVOPOL Campus de Estudio" class="w-full h-auto" style="object-fit: cover; object-position: top;" loading="lazy" />
+                    </div>
                   </div>
                 </div>
                 <!-- Reflection -->
