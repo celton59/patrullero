@@ -1633,7 +1633,16 @@ import '../styles/global.css';
       document.querySelectorAll('.classified-stamp').forEach(el => stampObserver.observe(el));
 
       // Anti-flicker: reveal body once fonts are loaded (or after 300ms safety timeout)
-      const reveal = () => document.body.classList.add('ready');
+      const reveal = () => {
+        document.body.classList.add('ready');
+        // Re-trigger observers after body is visible (fixes elements missed during opacity:0)
+        setTimeout(() => {
+          document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+          document.querySelectorAll('.apple-feature').forEach(el => appleObserver.observe(el));
+          document.querySelectorAll('[data-counter]').forEach(el => counterObserver.observe(el));
+          document.querySelectorAll('.classified-stamp').forEach(el => stampObserver.observe(el));
+        }, 50);
+      };
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(reveal);
       }
