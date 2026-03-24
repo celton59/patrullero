@@ -340,21 +340,9 @@ import '../styles/global.css';
 
   <body class="bg-grid min-h-screen antialiased">
 
-    <!-- Spain map overlay with active study points -->
-    <div class="fixed inset-0 pointer-events-none z-0 opacity-30">
-      <svg viewBox="0 0 800 700" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
-        <!-- Simplified Spain outline -->
-        <path d="M280,120 L320,100 L380,90 L440,95 L500,80 L540,90 L580,110 L600,140 L620,160 L640,200 L630,240 L600,280 L580,320 L560,360 L540,380 L500,400 L460,420 L420,430 L380,420 L340,400 L300,380 L270,350 L250,310 L240,270 L250,230 L260,190 L270,150 Z" fill="none" stroke="rgba(33,89,226,0.08)" stroke-width="1"/>
-        <!-- Study points (cities) -->
-        <circle cx="380" cy="310" r="3" fill="#2159E2" opacity="0.6"><animate attributeName="r" values="3;5;3" dur="3s" repeatCount="indefinite"/></circle>
-        <circle cx="560" cy="280" r="2.5" fill="#2159E2" opacity="0.5"><animate attributeName="r" values="2.5;4.5;2.5" dur="3.5s" repeatCount="indefinite"/></circle>
-        <circle cx="310" cy="250" r="2" fill="#2159E2" opacity="0.4"><animate attributeName="r" values="2;4;2" dur="4s" repeatCount="indefinite"/></circle>
-        <circle cx="480" cy="200" r="2.5" fill="#2159E2" opacity="0.5"><animate attributeName="r" values="2.5;4.5;2.5" dur="2.8s" repeatCount="indefinite"/></circle>
-        <circle cx="420" cy="380" r="2" fill="#2159E2" opacity="0.4"><animate attributeName="r" values="2;4;2" dur="3.2s" repeatCount="indefinite"/></circle>
-        <circle cx="340" cy="180" r="2" fill="#5A2177" opacity="0.4"><animate attributeName="r" values="2;3.5;2" dur="3.8s" repeatCount="indefinite"/></circle>
-        <circle cx="520" cy="340" r="2.5" fill="#5A2177" opacity="0.5"><animate attributeName="r" values="2.5;4;2.5" dur="3.3s" repeatCount="indefinite"/></circle>
-        <circle cx="440" cy="150" r="2" fill="#2159E2" opacity="0.3"><animate attributeName="r" values="2;3.5;2" dur="4.2s" repeatCount="indefinite"/></circle>
-      </svg>
+    <!-- Spain map — real SVG provinces as hero background -->
+    <div class="fixed inset-0 pointer-events-none z-0 flex items-center justify-center" style="opacity: 0.35;">
+      <img src="/spain-map.svg" alt="" class="w-[90vw] max-w-[800px] h-auto" style="filter: drop-shadow(0 0 40px rgba(33,89,226,0.15));" />
     </div>
 
     <!-- ============ FLASHLIGHT BACKGROUND IMAGES (revealed by beam) ============ -->
