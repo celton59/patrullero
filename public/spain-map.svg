@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" height="392" id="svg3609" version="1.1" width="569">
   <style>
-    /* Province glow animation — groups light up sequentially */
+    /* Province glow animation — groups light up sequentially in green */
     @keyframes province-glow {
       0%, 85%, 100% { fill: rgba(33,89,226,0.12); }
-      40%, 60% { fill: rgba(33,89,226,0.45); filter: drop-shadow(0 0 8px rgba(33,89,226,0.4)); }
+      40%, 60% { fill: rgba(34,197,94,0.35); filter: drop-shadow(0 0 8px rgba(34,197,94,0.3)); }
     }
     /* Stagger 52 provinces across ~20s cycle, each glows for ~3s */
     #ES-M path  { animation: province-glow 18s ease-in-out 0s infinite; }
