@@ -440,63 +440,10 @@ import '../styles/global.css';
         <!-- Glow background -->
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#2159E2]/10 rounded-full blur-[120px] pointer-events-none"></div>
 
-        <!-- Spain map with city dots (parallax) -->
+        <!-- Spain map with provinces that glow (parallax) -->
         <div id="spain-map-parallax" class="absolute inset-0 pointer-events-none z-0 flex items-center justify-start transition-transform duration-200 ease-out" style="opacity: 0.8;">
           <div class="relative w-[70vw] max-w-[650px] ml-[-5vw] mt-[5vh]">
-            <img src="/spain-map.svg" alt="" class="w-full h-auto" style="filter: drop-shadow(0 0 60px rgba(33,89,226,0.3));" />
-            <!-- Pulsing city dots — positioned relative to the SVG (569x392 viewBox) -->
-            <!-- Madrid -->
-            <div class="absolute" style="left:52%; top:52%;">
-              <div class="w-2.5 h-2.5 rounded-full bg-[#2159E2] animate-ping absolute"></div>
-              <div class="w-2.5 h-2.5 rounded-full bg-[#2159E2] relative"></div>
-              <div class="absolute left-4 top-[-3px] bg-slate-900/80 backdrop-blur-sm border border-white/10 rounded-md px-2 py-0.5 opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-auto">
-                <span class="text-[9px] text-white font-bold">Madrid · 142 opositores</span>
-              </div>
-            </div>
-            <!-- Barcelona -->
-            <div class="absolute" style="left:75%; top:28%;">
-              <div class="w-2 h-2 rounded-full bg-[#2159E2] animate-ping absolute" style="animation-delay:0.5s;"></div>
-              <div class="w-2 h-2 rounded-full bg-[#2159E2] relative"></div>
-              <div class="absolute left-4 top-[-3px] bg-slate-900/80 backdrop-blur-sm border border-white/10 rounded-md px-2 py-0.5 opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-auto">
-                <span class="text-[9px] text-white font-bold">Barcelona · 89 opositores</span>
-              </div>
-            </div>
-            <!-- Sevilla -->
-            <div class="absolute" style="left:38%; top:78%;">
-              <div class="w-2 h-2 rounded-full bg-[#5A2177] animate-ping absolute" style="animation-delay:1s;"></div>
-              <div class="w-2 h-2 rounded-full bg-[#5A2177] relative"></div>
-              <div class="absolute left-4 top-[-3px] bg-slate-900/80 backdrop-blur-sm border border-white/10 rounded-md px-2 py-0.5 opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-auto">
-                <span class="text-[9px] text-white font-bold">Sevilla · 67 opositores</span>
-              </div>
-            </div>
-            <!-- Valencia -->
-            <div class="absolute" style="left:68%; top:55%;">
-              <div class="w-2 h-2 rounded-full bg-[#2159E2] animate-ping absolute" style="animation-delay:1.5s;"></div>
-              <div class="w-2 h-2 rounded-full bg-[#2159E2] relative"></div>
-              <div class="absolute left-4 top-[-3px] bg-slate-900/80 backdrop-blur-sm border border-white/10 rounded-md px-2 py-0.5 opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-auto">
-                <span class="text-[9px] text-white font-bold">Valencia · 53 opositores</span>
-              </div>
-            </div>
-            <!-- Málaga -->
-            <div class="absolute" style="left:47%; top:88%;">
-              <div class="w-1.5 h-1.5 rounded-full bg-[#5A2177] animate-ping absolute" style="animation-delay:2s;"></div>
-              <div class="w-1.5 h-1.5 rounded-full bg-[#5A2177] relative"></div>
-            </div>
-            <!-- Bilbao -->
-            <div class="absolute" style="left:48%; top:12%;">
-              <div class="w-1.5 h-1.5 rounded-full bg-[#2159E2] animate-ping absolute" style="animation-delay:0.8s;"></div>
-              <div class="w-1.5 h-1.5 rounded-full bg-[#2159E2] relative"></div>
-            </div>
-            <!-- Zaragoza -->
-            <div class="absolute" style="left:60%; top:30%;">
-              <div class="w-1.5 h-1.5 rounded-full bg-[#2159E2] animate-ping absolute" style="animation-delay:1.3s;"></div>
-              <div class="w-1.5 h-1.5 rounded-full bg-[#2159E2] relative"></div>
-            </div>
-            <!-- A Coruña -->
-            <div class="absolute" style="left:18%; top:18%;">
-              <div class="w-1.5 h-1.5 rounded-full bg-[#5A2177] animate-ping absolute" style="animation-delay:1.8s;"></div>
-              <div class="w-1.5 h-1.5 rounded-full bg-[#5A2177] relative"></div>
-            </div>
+            <img id="spain-map-img" src="/spain-map.svg" alt="" class="w-full h-auto spain-map-glow" style="filter: drop-shadow(0 0 60px rgba(33,89,226,0.3));" />
           </div>
         </div>
         <div class="absolute top-20 right-0 w-[400px] h-[400px] bg-[#5A2177]/10 rounded-full blur-[100px] pointer-events-none"></div>
