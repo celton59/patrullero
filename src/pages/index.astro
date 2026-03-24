@@ -287,6 +287,38 @@ import '../styles/global.css';
         box-shadow: 0 0 20px rgba(33,89,226,0.4);
       }
 
+      /* ===== WEBVIEW 3D EFFECTS ===== */
+      @keyframes border-glow-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .webview-glow-border {
+        border-radius: 0.75rem;
+        overflow: hidden;
+      }
+      .webview-glow-border::before {
+        content: '';
+        position: absolute;
+        inset: -50%;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0%,
+          rgba(33,89,226,0.5) 10%,
+          transparent 20%,
+          transparent 50%,
+          rgba(90,33,119,0.4) 60%,
+          transparent 70%
+        );
+        animation: border-glow-spin 4s linear infinite;
+      }
+      .webview-glow-border::after {
+        content: '';
+        position: absolute;
+        inset: 2px;
+        background: #0a0a0a;
+        border-radius: 0.65rem;
+      }
+
       /* ===== 1. SIREN PULSE ===== */
       @keyframes siren-pulse {
         0%, 100% { background: radial-gradient(ellipse at 30% 50%, rgba(33,89,226,0.15) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(220,38,38,0.08) 0%, transparent 60%); }
@@ -496,11 +528,13 @@ import '../styles/global.css';
               </div>
             </div>
 
-            <!-- Right: Browser mockup with real campus iframe -->
-            <div class="relative animate-fade-up delay-300 hidden lg:block">
-              <div class="relative">
+            <!-- Right: Browser mockup with 3D tilt + reflection + border glow -->
+            <div class="relative animate-fade-up delay-300 hidden lg:block" style="perspective: 800px;">
+              <div id="webview-tilt" class="relative" style="transform-style: preserve-3d; transition: transform 0.15s ease-out;">
+                <!-- Animated border glow -->
+                <div class="webview-glow-border absolute -inset-[2px] rounded-xl z-0"></div>
                 <!-- Browser frame -->
-                <div class="rounded-xl overflow-hidden shadow-2xl shadow-[#2159E2]/20 ring-1 ring-white/10 max-w-lg mx-auto">
+                <div class="relative rounded-xl overflow-hidden shadow-2xl shadow-[#2159E2]/20 max-w-lg mx-auto z-10">
                   <!-- Browser chrome -->
                   <div class="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a]">
                     <div class="flex gap-1.5">
@@ -525,12 +559,13 @@ import '../styles/global.css';
                       tabindex="-1"
                       aria-hidden="true"
                     ></iframe>
-                    <!-- Overlay to prevent interaction -->
                     <div class="absolute inset-0 z-10"></div>
                   </div>
                 </div>
-
-
+                <!-- Reflection -->
+                <div class="mt-2 rounded-xl overflow-hidden max-w-lg mx-auto" style="height: 60px; mask-image: linear-gradient(to bottom, rgba(0,0,0,0.15), transparent); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.15), transparent); transform: scaleY(-1);">
+                  <div class="bg-[#1a1a1a] rounded-xl" style="height: 60px;"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -1551,6 +1586,23 @@ import '../styles/global.css';
           }
         });
       });
+
+      // 3D Tilt: webview follows mouse
+      const tiltEl = document.getElementById('webview-tilt');
+      if (tiltEl) {
+        const parent = tiltEl.closest('[style*="perspective"]');
+        if (parent) {
+          parent.addEventListener('mousemove', (e) => {
+            const rect = parent.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            tiltEl.style.transform = `rotateY(${x * 8}deg) rotateX(${-y * 6}deg)`;
+          }, { passive: true });
+          parent.addEventListener('mouseleave', () => {
+            tiltEl.style.transform = 'rotateY(0deg) rotateX(0deg)';
+          });
+        }
+      }
 
       // Parallax: map follows mouse subtly
       const mapEl = document.getElementById('spain-map-parallax');
