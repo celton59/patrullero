@@ -1751,6 +1751,31 @@ import '../styles/global.css';
           const scaleFactor = 16;
           phoneModel.scale.setScalar(scaleFactor);
 
+          // Brighten dark materials so phone is visible on dark bg
+          phoneModel.traverse((child) => {
+            if (child.isMesh && child.material) {
+              const mat = child.material;
+              // Make the body/frame lighter (titanium look)
+              if (mat.name === 'Aluminum' || mat.name === 'Frame' || mat.name === 'Frosted glass') {
+                mat.color.set(0x888899);
+                mat.roughness = 0.25;
+                mat.metalness = 0.9;
+              }
+              // Screen — dark blue glow
+              if (mat.name === 'Display') {
+                mat.color.set(0x0a1530);
+                mat.emissive = new THREE.Color(0x0a1530);
+                mat.emissiveIntensity = 0.5;
+              }
+              // Camera filter / back
+              if (mat.name === 'Camera filter' || mat.name === 'Camera_Glass') {
+                mat.color.set(0x222233);
+              }
+              mat.envMapIntensity = 2.0;
+              mat.needsUpdate = true;
+            }
+          });
+
           pivot.add(phoneModel);
 
           // Initial tilt
