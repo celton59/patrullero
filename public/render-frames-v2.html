@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Render iPhone Frames v2 — with campus screenshot</title>
+  <style>body{background:#000;color:#fff;font-family:monospace;padding:20px}#status{font-size:18px;margin-bottom:10px}</style>
+  <script type="importmap">
+  {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
+  </script>
+</head>
+<body>
+  <div id="status">Loading...</div>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    const FRAMES = 48, W = 400, H = 700;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, W/H, 0.001, 10);
+    camera.position.set(0, 0, 0.42);
+    const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true, preserveDrawingBuffer:true});
+    renderer.setSize(W,H); renderer.setPixelRatio(1);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 2.2;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+    const k=new THREE.DirectionalLight(0xffffff,3); k.position.set(3,4,5); scene.add(k);
+    const f=new THREE.DirectionalLight(0x4488ff,1.2); f.position.set(-3,2,2); scene.add(f);
+    const r=new THREE.DirectionalLight(0x8855ff,0.8); r.position.set(-1,-2,-3); scene.add(r);
+    const t=new THREE.DirectionalLight(0xffffff,1); t.position.set(0,5,0); scene.add(t);
+
+    // Load campus screenshot as texture
+    const texLoader = new THREE.TextureLoader();
+    const campusTex = await new Promise(r => texLoader.load('/campus-screenshot.jpg', r));
+    campusTex.colorSpace = THREE.SRGBColorSpace;
+
+    new GLTFLoader().load('/iphone-17-pro.glb', async (gltf) => {
+      const model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      model.position.sub(box.getCenter(new THREE.Vector3()));
+      model.rotation.x = 0.12;
+
+      // Find the Display material and replace with campus screenshot
+      model.traverse((child) => {
+        if (child.isMesh && child.material) {
+          const mat = child.material;
+          if (mat.name === 'Display') {
+            mat.map = campusTex;
+            mat.emissive = new THREE.Color(0x333333);
+            mat.emissiveIntensity = 0.3;
+            mat.emissiveMap = campusTex;
+            mat.color.set(0xffffff);
+            mat.roughness = 0.1;
+            mat.metalness = 0;
+            mat.needsUpdate = true;
+          }
+        }
+      });
+
+      scene.add(model);
+      document.getElementById('status').textContent = 'Rendering...';
+
+      window.__frameDataURLs = [];
+      for (let i = 0; i < FRAMES; i++) {
+        model.rotation.y = (i / FRAMES) * Math.PI * 2;
+        renderer.render(scene, camera);
+        window.__frameDataURLs.push(renderer.domElement.toDataURL('image/webp', 0.85));
+        document.getElementById('status').textContent = `Frame ${i+1}/${FRAMES}`;
+      }
+      document.getElementById('status').textContent = '✅ Done! Frames in window.__frameDataURLs';
+    });
+  </script>
+</body>
+</html>
