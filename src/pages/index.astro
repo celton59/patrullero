@@ -527,11 +527,6 @@ import '../styles/global.css';
 
             <!-- Right: Browser mockup with 3D tilt + reflection + border glow -->
             <div class="relative animate-fade-up delay-300 hidden lg:block" style="perspective: 800px;">
-              <!-- Police background behind webview -->
-              <div class="absolute -inset-8 z-0 rounded-2xl overflow-hidden">
-                <img src="/policia-bg.png" alt="" class="w-full h-full object-cover" style="opacity: 0.25; filter: blur(2px);" />
-                <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]/80"></div>
-              </div>
               <div id="webview-tilt" class="relative" style="transform-style: preserve-3d; transition: transform 0.15s ease-out;">
                 <!-- Glow wrapper -->
                 <div class="webview-glow-border relative rounded-xl p-[3px] max-w-lg mx-auto">
