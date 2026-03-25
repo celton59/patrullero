@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Adjust Screen Plane Position</title>
+  <style>
+    body { background:#111; color:#fff; font-family:monospace; margin:0; display:flex; }
+    #view { flex:1; height:100vh; }
+    #controls { width:300px; padding:20px; background:#222; overflow-y:auto; }
+    label { display:block; margin:8px 0 2px; font-size:12px; }
+    input[type=range] { width:100%; }
+    .val { color:#4af; font-size:11px; }
+    button { margin-top:15px; padding:10px 20px; background:#2159E2; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; width:100%; }
+  </style>
+  <script type="importmap">
+  {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
+  </script>
+</head>
+<body>
+  <div id="view"></div>
+  <div id="controls">
+    <h3>Screen Plane Adjuster</h3>
+    <label>Width <span class="val" id="vw"></span></label>
+    <input type="range" id="sw" min="0.02" max="0.08" step="0.0005" value="0.058">
+    <label>Height <span class="val" id="vh"></span></label>
+    <input type="range" id="sh" min="0.05" max="0.16" step="0.0005" value="0.125">
+    <label>Pos X <span class="val" id="vx"></span></label>
+    <input type="range" id="px" min="-0.01" max="0.01" step="0.0001" value="0">
+    <label>Pos Y <span class="val" id="vy"></span></label>
+    <input type="range" id="py" min="-0.01" max="0.01" step="0.0001" value="0">
+    <label>Pos Z <span class="val" id="vz"></span></label>
+    <input type="range" id="pz" min="0.003" max="0.006" step="0.00005" value="0.0044">
+    <label>Corner Radius <span class="val" id="vcr"></span></label>
+    <input type="range" id="cr" min="0" max="0.008" step="0.0002" value="0.003">
+    <label>DI Y offset <span class="val" id="vdi"></span></label>
+    <input type="range" id="di" min="0.04" max="0.07" step="0.0005" value="0.055">
+    <button id="render-btn">🎬 Render 48 Frames</button>
+    <pre id="output" style="font-size:10px; margin-top:10px; color:#8f8;"></pre>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    const viewEl = document.getElementById('view');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, viewEl.clientWidth / viewEl.clientHeight, 0.001, 10);
+    camera.position.set(0, 0, 0.42);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+    renderer.setSize(viewEl.clientWidth, viewEl.clientHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 2.2;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    viewEl.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+    [[[3,4,5],0xffffff,3],[[-3,2,2],0x4488ff,1.2],[[-1,-2,-3],0x8855ff,0.8],[[0,5,0],0xffffff,1]].forEach(([p,c,i])=>{
+      const l=new THREE.DirectionalLight(c,i); l.position.set(...p); scene.add(l);
+    });
+
+    const texLoader = new THREE.TextureLoader();
+    const campusTex = await new Promise(r => texLoader.load('/campus-screenshot.jpg', r));
+    campusTex.colorSpace = THREE.SRGBColorSpace;
+
+    let model, screenPlane, diPlane, screenMat;
+
+    function makeRoundedShape(w, h, cr) {
+      const hw = w/2, hh = h/2;
+      const s = new THREE.Shape();
+      s.moveTo(-hw+cr, -hh);
+      s.lineTo(hw-cr, -hh);
+      s.quadraticCurveTo(hw, -hh, hw, -hh+cr);
+      s.lineTo(hw, hh-cr);
+      s.quadraticCurveTo(hw, hh, hw-cr, hh);
+      s.lineTo(-hw+cr, hh);
+      s.quadraticCurveTo(-hw, hh, -hw, hh-cr);
+      s.lineTo(-hw, -hh+cr);
+      s.quadraticCurveTo(-hw, -hh, -hw+cr, -hh);
+      return s;
+    }
+
+    function makeDIPill(w, h) {
+      const s = new THREE.Shape();
+      const r = h;
+      s.moveTo(-w+r, -h);
+      s.lineTo(w-r, -h);
+      s.quadraticCurveTo(w, -h, w, 0);
+      s.quadraticCurveTo(w, h, w-r, h);
+      s.lineTo(-w+r, h);
+      s.quadraticCurveTo(-w, h, -w, 0);
+      s.quadraticCurveTo(-w, -h, -w+r, -h);
+      return s;
+    }
+
+    new GLTFLoader().load('/iphone-17-pro.glb', (gltf) => {
+      model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      model.position.sub(box.getCenter(new THREE.Vector3()));
+      model.rotation.x = 0.12;
+      scene.add(model);
+
+      screenMat = new THREE.MeshBasicMaterial({ map: campusTex, toneMapped: false });
+      screenPlane = new THREE.Mesh(new THREE.ShapeGeometry(makeRoundedShape(0.058, 0.125, 0.003)), screenMat);
+      screenPlane.position.set(0, 0, 0.0044);
+      model.add(screenPlane);
+
+      const diMat = new THREE.MeshBasicMaterial({ color: 0x000000, toneMapped: false });
+      diPlane = new THREE.Mesh(new THREE.ShapeGeometry(makeDIPill(0.016, 0.0025)), diMat);
+      diPlane.position.set(0, 0.055, 0.00441);
+      model.add(diPlane);
+
+      update();
+    });
+
+    function update() {
+      if (!screenPlane) return;
+      const w = +document.getElementById('sw').value;
+      const h = +document.getElementById('sh').value;
+      const cr = +document.getElementById('cr').value;
+      const px = +document.getElementById('px').value;
+      const py = +document.getElementById('py').value;
+      const pz = +document.getElementById('pz').value;
+      const diy = +document.getElementById('di').value;
+
+      document.getElementById('vw').textContent = w.toFixed(4);
+      document.getElementById('vh').textContent = h.toFixed(4);
+      document.getElementById('vx').textContent = px.toFixed(4);
+      document.getElementById('vy').textContent = py.toFixed(4);
+      document.getElementById('vz').textContent = pz.toFixed(5);
+      document.getElementById('vcr').textContent = cr.toFixed(4);
+      document.getElementById('vdi').textContent = diy.toFixed(4);
+
+      screenPlane.geometry.dispose();
+      screenPlane.geometry = new THREE.ShapeGeometry(makeRoundedShape(w, h, cr));
+      screenPlane.position.set(px, py, pz);
+
+      diPlane.geometry.dispose();
+      diPlane.geometry = new THREE.ShapeGeometry(makeDIPill(0.016, 0.0025));
+      diPlane.position.set(px, diy, pz + 0.00001);
+    }
+
+    document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener('input', update));
+
+    // Render frames
+    document.getElementById('render-btn').addEventListener('click', async () => {
+      const out = document.getElementById('output');
+      out.textContent = 'Rendering...';
+
+      // Switch to render camera
+      const renderCam = new THREE.PerspectiveCamera(30, 400/700, 0.001, 10);
+      renderCam.position.set(0, 0, 0.42);
+      const renderRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+      renderRenderer.setSize(400, 700);
+      renderRenderer.setPixelRatio(1);
+      renderRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderRenderer.toneMappingExposure = 2.2;
+      renderRenderer.outputColorSpace = THREE.SRGBColorSpace;
+
+      for (let i = 0; i < 48; i++) {
+        model.rotation.y = (i / 48) * Math.PI * 2;
+        renderRenderer.render(scene, renderCam);
+        const data = renderRenderer.domElement.toDataURL('image/webp', 0.85).split(',')[1];
+        await fetch('http://localhost:4488', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ index: i, data })
+        });
+        out.textContent = `Frame ${i+1}/48`;
+      }
+      // Reset rotation
+      model.rotation.y = 0;
+      out.textContent = '✅ All 48 frames saved!';
+      renderRenderer.dispose();
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = viewEl.clientWidth / viewEl.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(viewEl.clientWidth, viewEl.clientHeight);
+    });
+  </script>
+</body>
+</html>
