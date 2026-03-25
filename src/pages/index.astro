@@ -527,8 +527,10 @@ import '../styles/global.css';
 
             <!-- Right: Browser mockup with 3D tilt + reflection + border glow -->
             <div class="relative animate-fade-up delay-300 hidden lg:block" style="perspective: 800px;">
-              <!-- Police officer peeking from top-left behind the webview -->
-              <img src="/policia-hero.png" alt="" class="absolute -top-16 -left-20 w-52 z-0 pointer-events-none" style="opacity: 0.7; filter: drop-shadow(0 0 20px rgba(33,89,226,0.3));" />
+              <!-- GEO officer peeking from top-left -->
+              <img src="/policia-left.png" alt="" class="absolute -top-12 -left-16 w-44 z-0 pointer-events-none" style="opacity: 0.6; filter: drop-shadow(0 0 20px rgba(33,89,226,0.4));" />
+              <!-- Female officer with binoculars peeking from top-right -->
+              <img src="/policia-right.png" alt="" class="absolute -top-14 -right-16 w-40 z-0 pointer-events-none" style="opacity: 0.6; filter: drop-shadow(0 0 20px rgba(33,89,226,0.4));" />
               <div id="webview-tilt" class="relative" style="transform-style: preserve-3d; transition: transform 0.15s ease-out;">
                 <!-- Glow wrapper -->
                 <div class="webview-glow-border relative rounded-xl p-[3px] max-w-lg mx-auto">
