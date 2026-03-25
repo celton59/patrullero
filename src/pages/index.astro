@@ -1693,37 +1693,45 @@ import '../styles/global.css';
       const container = document.getElementById('iphone-3d-container');
       if (container) {
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.01, 10);
-        camera.position.set(0, 0, 0.28);
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.set(0, 0, 4.5);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.4;
+        renderer.toneMappingExposure = 1.6;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         container.appendChild(renderer.domElement);
 
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        // Lights — generous for dark background
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
         scene.add(ambientLight);
 
-        const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
-        keyLight.position.set(2, 3, 4);
+        const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+        keyLight.position.set(3, 5, 6);
         scene.add(keyLight);
 
-        const fillLight = new THREE.DirectionalLight(0x2159E2, 0.5);
-        fillLight.position.set(-2, 1, -2);
+        const fillLight = new THREE.DirectionalLight(0x2159E2, 0.8);
+        fillLight.position.set(-3, 2, -3);
         scene.add(fillLight);
 
-        const rimLight = new THREE.DirectionalLight(0x8844ff, 0.4);
-        rimLight.position.set(0, -2, -3);
+        const rimLight = new THREE.DirectionalLight(0x8844ff, 0.6);
+        rimLight.position.set(0, -3, -4);
         scene.add(rimLight);
 
+        const topLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        topLight.position.set(0, 6, 0);
+        scene.add(topLight);
+
         // Back glow
-        const backGlow = new THREE.PointLight(0x2159E2, 1, 1);
-        backGlow.position.set(0, 0, -0.15);
+        const backGlow = new THREE.PointLight(0x2159E2, 2, 10);
+        backGlow.position.set(0, 0, -2);
         scene.add(backGlow);
+
+        // Pivot group for rotation
+        const pivot = new THREE.Group();
+        scene.add(pivot);
 
         // Load model
         let phoneModel = null;
@@ -1731,42 +1739,40 @@ import '../styles/global.css';
         loader.load('/iphone-17-pro.glb', (gltf) => {
           phoneModel = gltf.scene;
 
-          // Center & scale
+          // Center it
           const box = new THREE.Box3().setFromObject(phoneModel);
           const center = box.getCenter(new THREE.Vector3());
-          const size = box.getSize(new THREE.Vector3());
           phoneModel.position.sub(center);
 
-          // Scale to fit nicely
-          const maxDim = Math.max(size.x, size.y, size.z);
-          const scale = 0.12 / maxDim;
-          phoneModel.scale.setScalar(scale);
+          // Model is ~0.15 units tall, scale up to ~2.5 units so it fills the viewport
+          const scaleFactor = 16;
+          phoneModel.scale.setScalar(scaleFactor);
+
+          pivot.add(phoneModel);
 
           // Initial tilt
-          phoneModel.rotation.x = THREE.MathUtils.degToRad(5);
-          phoneModel.rotation.y = THREE.MathUtils.degToRad(-20);
-          phoneModel.rotation.z = THREE.MathUtils.degToRad(5);
-
-          scene.add(phoneModel);
+          pivot.rotation.x = THREE.MathUtils.degToRad(5);
+          pivot.rotation.y = THREE.MathUtils.degToRad(-20);
+          pivot.rotation.z = THREE.MathUtils.degToRad(5);
         }, undefined, (err) => {
           console.warn('iPhone model failed to load:', err);
         });
 
         // Animate
-        let time = 0;
+        const clock = new THREE.Clock();
         function animate() {
           requestAnimationFrame(animate);
-          time += 0.016;
+          const t = clock.getElapsedTime();
 
-          if (phoneModel) {
+          if (pivot.children.length > 0) {
             // Gentle float
-            phoneModel.position.y = Math.sin(time * 0.8) * 0.003;
+            pivot.position.y = Math.sin(t * 0.8) * 0.05;
             // Slow rotation
-            phoneModel.rotation.y = THREE.MathUtils.degToRad(-20) + Math.sin(time * 0.4) * 0.08;
+            pivot.rotation.y = THREE.MathUtils.degToRad(-20) + Math.sin(t * 0.4) * 0.12;
           }
 
           // Back glow pulse
-          backGlow.intensity = 1 + Math.sin(time * 0.6) * 0.3;
+          backGlow.intensity = 2 + Math.sin(t * 0.6) * 0.5;
 
           renderer.render(scene, camera);
         }
