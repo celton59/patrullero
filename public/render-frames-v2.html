@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Render iPhone Frames v2 — with campus screenshot</title>
+  <title>Render iPhone Frames v2 — campus overlay</title>
   <style>body{background:#000;color:#fff;font-family:monospace;padding:20px}#status{font-size:18px;margin-bottom:10px}</style>
   <script type="importmap">
   {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
@@ -30,37 +30,33 @@
     const r=new THREE.DirectionalLight(0x8855ff,0.8); r.position.set(-1,-2,-3); scene.add(r);
     const t=new THREE.DirectionalLight(0xffffff,1); t.position.set(0,5,0); scene.add(t);
 
-    // Load campus screenshot as texture
+    // Load campus screenshot
     const texLoader = new THREE.TextureLoader();
-    const campusTex = await new Promise(r => texLoader.load('/campus-screenshot.jpg', r));
+    const campusTex = await new Promise(resolve => texLoader.load('/campus-screenshot.jpg', resolve));
     campusTex.colorSpace = THREE.SRGBColorSpace;
 
     new GLTFLoader().load('/iphone-17-pro.glb', async (gltf) => {
       const model = gltf.scene;
       const box = new THREE.Box3().setFromObject(model);
-      model.position.sub(box.getCenter(new THREE.Vector3()));
+      const center = box.getCenter(new THREE.Vector3());
+      model.position.sub(center);
       model.rotation.x = 0.12;
 
-      // Find the Display material and replace with campus screenshot
-      model.traverse((child) => {
-        if (child.isMesh && child.material) {
-          const mat = child.material;
-          if (mat.name === 'Display') {
-            mat.map = campusTex;
-            mat.emissive = new THREE.Color(0x333333);
-            mat.emissiveIntensity = 0.3;
-            mat.emissiveMap = campusTex;
-            mat.color.set(0xffffff);
-            mat.roughness = 0.1;
-            mat.metalness = 0;
-            mat.needsUpdate = true;
-          }
-        }
-      });
-
       scene.add(model);
-      document.getElementById('status').textContent = 'Rendering...';
 
+      // Create screen overlay plane positioned right on the display
+      // Screen dimensions from model: roughly 0.0675 x 0.1456 centered at z=0.00345
+      const screenGeo = new THREE.PlaneGeometry(0.064, 0.138);
+      const screenMat = new THREE.MeshBasicMaterial({
+        map: campusTex,
+        toneMapped: false,
+      });
+      const screenPlane = new THREE.Mesh(screenGeo, screenMat);
+      // Position on front face of phone
+      screenPlane.position.set(0, 0, 0.00455);
+      model.add(screenPlane);
+
+      document.getElementById('status').textContent = 'Rendering...';
       window.__frameDataURLs = [];
       for (let i = 0; i < FRAMES; i++) {
         model.rotation.y = (i / FRAMES) * Math.PI * 2;
@@ -68,7 +64,7 @@
         window.__frameDataURLs.push(renderer.domElement.toDataURL('image/webp', 0.85));
         document.getElementById('status').textContent = `Frame ${i+1}/${FRAMES}`;
       }
-      document.getElementById('status').textContent = '✅ Done! Frames in window.__frameDataURLs';
+      document.getElementById('status').textContent = '✅ Done!';
     });
   </script>
 </body>
