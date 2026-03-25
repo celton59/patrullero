@@ -62,7 +62,7 @@
     });
 
     const texLoader = new THREE.TextureLoader();
-    const campusTex = await new Promise(r => texLoader.load('/campus-screenshot.jpg', r));
+    const campusTex = await new Promise(r => texLoader.load('/campus-real.jpg', r));
     campusTex.colorSpace = THREE.SRGBColorSpace;
 
     let model, screenPlane, diPlane, screenMat;
