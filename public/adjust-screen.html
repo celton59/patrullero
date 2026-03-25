@@ -48,8 +48,7 @@
     camera.position.set(0, 0, 0.42);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
     renderer.setSize(viewEl.clientWidth, viewEl.clientHeight);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 2.2;
+    renderer.toneMapping = THREE.NoToneMapping;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     viewEl.appendChild(renderer.domElement);
 
@@ -63,7 +62,7 @@
 
     const texLoader = new THREE.TextureLoader();
     const campusTex = await new Promise(r => texLoader.load('/campus-real.jpg', r));
-    campusTex.colorSpace = THREE.SRGBColorSpace;
+    // No colorSpace override — let it render as-is
 
     let model, screenPlane, diPlane, screenMat;
 
@@ -102,8 +101,10 @@
       model.rotation.x = 0.12;
       scene.add(model);
 
-      screenMat = new THREE.MeshBasicMaterial({ map: campusTex, toneMapped: false });
-      screenPlane = new THREE.Mesh(new THREE.ShapeGeometry(makeRoundedShape(0.058, 0.125, 0.003)), screenMat);
+      screenMat = new THREE.MeshBasicMaterial({ map: campusTex, toneMapped: false, color: 0xffffff });
+      const initGeo = new THREE.ShapeGeometry(makeRoundedShape(0.058, 0.125, 0.003));
+      fixUVs(initGeo, 0.058, 0.125);
+      screenPlane = new THREE.Mesh(initGeo, screenMat);
       screenPlane.position.set(0, 0, 0.0044);
       model.add(screenPlane);
 
@@ -114,6 +115,16 @@
 
       update();
     });
+
+    function fixUVs(geo, w, h) {
+      const pos = geo.attributes.position;
+      const uvs = new Float32Array(pos.count * 2);
+      for (let i = 0; i < pos.count; i++) {
+        uvs[i*2] = (pos.getX(i) + w/2) / w;
+        uvs[i*2+1] = (pos.getY(i) + h/2) / h;
+      }
+      geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    }
 
     function update() {
       if (!screenPlane) return;
@@ -134,7 +145,9 @@
       document.getElementById('vdi').textContent = diy.toFixed(4);
 
       screenPlane.geometry.dispose();
-      screenPlane.geometry = new THREE.ShapeGeometry(makeRoundedShape(w, h, cr));
+      const newGeo = new THREE.ShapeGeometry(makeRoundedShape(w, h, cr));
+      fixUVs(newGeo, w, h);
+      screenPlane.geometry = newGeo;
       screenPlane.position.set(px, py, pz);
 
       diPlane.geometry.dispose();
