@@ -67,19 +67,21 @@
     requestAnimationFrame(loop);
   }
 
-  // Cards: IntersectionObserver fade-in
-  const cards = document.querySelectorAll('.scroll-card[data-card]:not([data-card="0"])');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.style.opacity = '1';
-        e.target.style.transform = 'translateY(0)';
-        obs.unobserve(e.target);
-      }
+  // Cards: IntersectionObserver fade-in (desktop only — mobile cards are always visible)
+  if (window.innerWidth >= 1024) {
+    const cards = document.querySelectorAll('.scroll-card[data-card]:not([data-card="0"])');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    cards.forEach(c => {
+      c.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      obs.observe(c);
     });
-  }, { threshold: 0.2 });
-  cards.forEach(c => {
-    c.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    obs.observe(c);
-  });
+  }
 })();
