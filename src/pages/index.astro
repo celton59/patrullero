@@ -1751,27 +1751,47 @@ import '../styles/global.css';
           const scaleFactor = 16;
           phoneModel.scale.setScalar(scaleFactor);
 
-          // Brighten dark materials so phone is visible on dark bg
+          // Override ALL materials for visibility on dark background
           phoneModel.traverse((child) => {
             if (child.isMesh && child.material) {
               const mat = child.material;
-              // Make the body/frame lighter (titanium look)
-              if (mat.name === 'Aluminum' || mat.name === 'Frame' || mat.name === 'Frosted glass') {
-                mat.color.set(0x888899);
-                mat.roughness = 0.25;
+              const n = mat.name;
+
+              if (n === 'Frosted glass' || n === 'Tint back glass') {
+                // Back glass — silver/titanium
+                mat.color.set(0x9999aa);
+                mat.metalness = 0.85;
+                mat.roughness = 0.3;
+              } else if (n === 'Aluminum') {
+                mat.color.set(0xaaaabb);
+                mat.metalness = 0.95;
+                mat.roughness = 0.2;
+              } else if (n === 'Frame') {
+                mat.color.set(0x555566);
                 mat.metalness = 0.9;
+                mat.roughness = 0.15;
+              } else if (n === 'Display') {
+                // Screen — blue glow like it's on
+                mat.color.set(0x111133);
+                mat.emissive = new THREE.Color(0x0d1a3a);
+                mat.emissiveIntensity = 1.5;
+              } else if (n === 'Plastic antena') {
+                mat.color.set(0x777788);
+              } else if (n === 'Metal Screw') {
+                mat.color.set(0xaaaaaa);
+                mat.metalness = 0.95;
+              } else if (n === 'LED') {
+                mat.emissive = new THREE.Color(0xffcc66);
+                mat.emissiveIntensity = 2.0;
+              } else {
+                // Everything else — lift from pure black
+                const c = mat.color;
+                if (c.r < 0.1 && c.g < 0.1 && c.b < 0.1) {
+                  mat.color.set(0x222233);
+                }
               }
-              // Screen — dark blue glow
-              if (mat.name === 'Display') {
-                mat.color.set(0x0a1530);
-                mat.emissive = new THREE.Color(0x0a1530);
-                mat.emissiveIntensity = 0.5;
-              }
-              // Camera filter / back
-              if (mat.name === 'Camera filter' || mat.name === 'Camera_Glass') {
-                mat.color.set(0x222233);
-              }
-              mat.envMapIntensity = 2.0;
+
+              mat.envMapIntensity = 2.5;
               mat.needsUpdate = true;
             }
           });
