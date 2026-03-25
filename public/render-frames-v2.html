@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Render iPhone Frames v2 — campus overlay</title>
+  <title>Render iPhone Frames v2 — campus inside screen</title>
   <style>body{background:#000;color:#fff;font-family:monospace;padding:20px}#status{font-size:18px;margin-bottom:10px}</style>
   <script type="importmap">
   {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
@@ -42,19 +42,75 @@
       model.position.sub(center);
       model.rotation.x = 0.12;
 
+      // Find the Screen mesh to get exact dimensions
+      let screenMesh = null;
+      model.traverse((child) => {
+        if (child.isMesh && child.material && child.material.name === 'Display') {
+          screenMesh = child;
+          // Log the bounding box of the screen
+          const sb = new THREE.Box3().setFromObject(child);
+          console.log('Screen bounds:', JSON.stringify({
+            min: {x: sb.min.x.toFixed(5), y: sb.min.y.toFixed(5), z: sb.min.z.toFixed(5)},
+            max: {x: sb.max.x.toFixed(5), y: sb.max.y.toFixed(5), z: sb.max.z.toFixed(5)},
+            sizeX: (sb.max.x - sb.min.x).toFixed(5),
+            sizeY: (sb.max.y - sb.min.y).toFixed(5),
+          }));
+        }
+      });
+
       scene.add(model);
 
-      // Create screen overlay plane positioned right on the display
-      // Screen dimensions from model: roughly 0.0675 x 0.1456 centered at z=0.00345
-      const screenGeo = new THREE.PlaneGeometry(0.064, 0.138);
+      // Wait for console to flush, then use measured screen bounds
+      // From GLB analysis: Screen mesh "Cube.004" Display material
+      // Bounds approx: x: -0.0338 to 0.0338, y: -0.0728 to 0.0728, z: ~0.00345
+      // Use slightly smaller to stay inside bezels with rounded corners
+
+      // Screen plane — slightly smaller than actual screen to avoid bleeding over bezels
+      const screenW = 0.062;  // ~92% of screen width
+      const screenH = 0.134;  // ~92% of screen height
+      const screenGeo = new THREE.PlaneGeometry(screenW, screenH);
+
+      // Round corners with a custom shape
+      const shape = new THREE.Shape();
+      const hw = screenW / 2, hh = screenH / 2, cr = 0.004; // corner radius
+      shape.moveTo(-hw + cr, -hh);
+      shape.lineTo(hw - cr, -hh);
+      shape.quadraticCurveTo(hw, -hh, hw, -hh + cr);
+      shape.lineTo(hw, hh - cr);
+      shape.quadraticCurveTo(hw, hh, hw - cr, hh);
+      shape.lineTo(-hw + cr, hh);
+      shape.quadraticCurveTo(-hw, hh, -hw, hh - cr);
+      shape.lineTo(-hw, -hh + cr);
+      shape.quadraticCurveTo(-hw, -hh, -hw + cr, -hh);
+
+      const roundedGeo = new THREE.ShapeGeometry(shape);
       const screenMat = new THREE.MeshBasicMaterial({
         map: campusTex,
         toneMapped: false,
       });
-      const screenPlane = new THREE.Mesh(screenGeo, screenMat);
-      // Position on front face of phone
-      screenPlane.position.set(0, 0, 0.00455);
+      const screenPlane = new THREE.Mesh(roundedGeo, screenMat);
+      // Position above the glass layer
+      screenPlane.position.set(0, 0, 0.0044);
       model.add(screenPlane);
+
+      // Dynamic Island cutout (black pill at top)
+      const diShape = new THREE.Shape();
+      const diW = 0.018, diH = 0.003, diR = 0.0015;
+      diShape.moveTo(-diW + diR, -diH);
+      diShape.lineTo(diW - diR, -diH);
+      diShape.quadraticCurveTo(diW, -diH, diW, -diH + diR);
+      diShape.lineTo(diW, diH - diR);
+      diShape.quadraticCurveTo(diW, diH, diW - diR, diH);
+      diShape.lineTo(-diW + diR, diH);
+      diShape.quadraticCurveTo(-diW, diH, -diW, diH - diR);
+      diShape.lineTo(-diW, -diH + diR);
+      diShape.quadraticCurveTo(-diW, -diH, -diW + diR, -diH);
+
+      const diGeo = new THREE.ShapeGeometry(diShape);
+      const diMat = new THREE.MeshBasicMaterial({ color: 0x000000, toneMapped: false });
+      const diPlane = new THREE.Mesh(diGeo, diMat);
+      diPlane.position.set(0, 0.062, 0.00356);
+      model.add(diPlane);
 
       document.getElementById('status').textContent = 'Rendering...';
       window.__frameDataURLs = [];
