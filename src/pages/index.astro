@@ -1689,6 +1689,7 @@ import '../styles/global.css';
     <script type="module">
       import * as THREE from 'three';
       import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
       const container = document.getElementById('iphone-3d-container');
       if (container) {
@@ -1700,33 +1701,35 @@ import '../styles/global.css';
         renderer.setSize(container.clientWidth, container.clientHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.6;
+        renderer.toneMappingExposure = 2.0;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         container.appendChild(renderer.domElement);
 
-        // Lights — generous for dark background
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+        // Environment map for realistic reflections
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        const envTexture = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+        scene.environment = envTexture;
+        pmremGenerator.dispose();
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
         scene.add(ambientLight);
 
-        const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+        const keyLight = new THREE.DirectionalLight(0xffffff, 3.0);
         keyLight.position.set(3, 5, 6);
         scene.add(keyLight);
 
-        const fillLight = new THREE.DirectionalLight(0x2159E2, 0.8);
-        fillLight.position.set(-3, 2, -3);
+        const fillLight = new THREE.DirectionalLight(0x4488ff, 1.2);
+        fillLight.position.set(-4, 2, 2);
         scene.add(fillLight);
 
-        const rimLight = new THREE.DirectionalLight(0x8844ff, 0.6);
-        rimLight.position.set(0, -3, -4);
+        const rimLight = new THREE.DirectionalLight(0xaa66ff, 0.8);
+        rimLight.position.set(-2, -1, -4);
         scene.add(rimLight);
 
-        const topLight = new THREE.DirectionalLight(0xffffff, 1.0);
-        topLight.position.set(0, 6, 0);
-        scene.add(topLight);
-
         // Back glow
-        const backGlow = new THREE.PointLight(0x2159E2, 2, 10);
-        backGlow.position.set(0, 0, -2);
+        const backGlow = new THREE.PointLight(0x2159E2, 3, 12);
+        backGlow.position.set(0, 0, -3);
         scene.add(backGlow);
 
         // Pivot group for rotation
