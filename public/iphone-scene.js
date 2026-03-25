@@ -1,100 +1,50 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+// iPhone 3D frame sequence — Apple-style scroll animation
+// 48 pre-rendered frames, ~416KB total. Zero WebGL at runtime.
 
 const { gsap, ScrollTrigger } = window;
 gsap.registerPlugin(ScrollTrigger);
 
 const container = document.getElementById('iphone-3d-container');
 if (container) {
-  // --- Scene ---
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(30, container.clientWidth / container.clientHeight, 0.001, 10);
-  camera.position.set(0, 0, 0.45);
+  const TOTAL_FRAMES = 48;
+  const canvas = document.createElement('canvas');
+  canvas.width = 400;
+  canvas.height = 700;
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  canvas.style.objectFit = 'contain';
+  container.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 2.0;
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  container.appendChild(renderer.domElement);
+  // Preload all frames
+  const frames = [];
+  let loadedCount = 0;
 
-  // --- Lights (simple, no env map) ---
-  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-
-  const key = new THREE.DirectionalLight(0xffffff, 2.5);
-  key.position.set(3, 4, 5);
-  scene.add(key);
-
-  const fill = new THREE.DirectionalLight(0x4488ff, 1.0);
-  fill.position.set(-3, 2, 2);
-  scene.add(fill);
-
-  const rim = new THREE.DirectionalLight(0x8855ff, 0.6);
-  rim.position.set(-1, -2, -3);
-  scene.add(rim);
-
-  const top = new THREE.DirectionalLight(0xffffff, 0.8);
-  top.position.set(0, 5, 0);
-  scene.add(top);
-
-  // --- Scroll state (mutated directly by ScrollTrigger) ---
-  let scrollProgress = 0;
-  const BASE_ROT_Y = -0.35;
-  const BASE_ROT_X = 0.14;
-
-  // --- Load model ---
-  let model = null;
-  const loader = new GLTFLoader();
-  loader.load('/iphone-17-pro.glb', (gltf) => {
-    model = gltf.scene;
-    const box = new THREE.Box3().setFromObject(model);
-    model.position.sub(box.getCenter(new THREE.Vector3()));
-    model.rotation.x = BASE_ROT_X;
-    model.rotation.y = BASE_ROT_Y;
-    scene.add(model);
-
-    // --- GSAP ScrollTrigger ---
-    setupScroll();
-  });
-
-  // --- Render loop (lightweight — just reads scrollProgress) ---
-  let raf;
-  let needsRender = true;
-  const clock = new THREE.Clock();
-
-  function render() {
-    raf = requestAnimationFrame(render);
-    if (!model) return;
-
-    const t = clock.getElapsedTime();
-
-    // Smooth rotation driven by scroll
-    model.rotation.y = BASE_ROT_Y + scrollProgress * Math.PI * 2;
-    model.rotation.x = BASE_ROT_X * (1 - scrollProgress * 0.8);
-
-    // Gentle float
-    model.position.y = Math.sin(t * 0.8) * 0.003;
-
-    renderer.render(scene, camera);
+  for (let i = 0; i < TOTAL_FRAMES; i++) {
+    const img = new Image();
+    img.src = `/iphone-frames/frame-${String(i).padStart(2, '0')}.webp`;
+    img.onload = () => {
+      loadedCount++;
+      if (loadedCount === TOTAL_FRAMES) {
+        // All loaded — draw first frame and setup scroll
+        drawFrame(0);
+        setupScroll();
+      }
+    };
+    frames.push(img);
   }
-  render();
 
-  // --- Resize ---
-  new ResizeObserver(() => {
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-  }).observe(container);
+  function drawFrame(index) {
+    const i = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(index)));
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(frames[i], 0, 0, canvas.width, canvas.height);
+  }
 
-  // --- ScrollTrigger setup ---
   function setupScroll() {
     const section = document.getElementById('study-anywhere');
     const cards = gsap.utils.toArray('.scroll-card');
 
-    // Pin iPhone while scrolling through cards
+    // Pin iPhone while scrolling
     ScrollTrigger.create({
       trigger: section,
       start: 'top top',
@@ -103,14 +53,17 @@ if (container) {
       pinSpacing: false,
     });
 
-    // Track scroll progress → drives phone rotation directly
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: 0,
-      onUpdate: (self) => {
-        scrollProgress = self.progress;
+    // Frame sequence driven by scroll
+    const frameObj = { frame: 0 };
+    gsap.to(frameObj, {
+      frame: TOTAL_FRAMES - 1,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0,
+        onUpdate: () => drawFrame(frameObj.frame),
       }
     });
 
