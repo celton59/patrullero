@@ -1,12 +1,9 @@
-// iPhone 3D frame sequence — Apple-style scroll animation
-// 48 pre-rendered frames, ~416KB total. Zero WebGL at runtime.
+// iPhone frame sequence — CSS sticky + rAF (no GSAP pin)
+(() => {
+  const container = document.getElementById('iphone-3d-container');
+  if (!container) return;
 
-const { gsap, ScrollTrigger } = window;
-gsap.registerPlugin(ScrollTrigger);
-
-const container = document.getElementById('iphone-3d-container');
-if (container) {
-  const TOTAL_FRAMES = 48;
+  const TOTAL = 48;
   const canvas = document.createElement('canvas');
   canvas.width = 400;
   canvas.height = 700;
@@ -16,71 +13,62 @@ if (container) {
   container.appendChild(canvas);
   const ctx = canvas.getContext('2d');
 
-  // Preload all frames
+  // Preload + decode all frames
   const frames = [];
-  let loadedCount = 0;
+  let ready = false;
+  let currentFrame = -1;
 
-  for (let i = 0; i < TOTAL_FRAMES; i++) {
-    const img = new Image();
-    img.src = `/iphone-frames/frame-${String(i).padStart(2, '0')}.webp`;
-    img.onload = () => {
-      loadedCount++;
-      if (loadedCount === TOTAL_FRAMES) {
-        // All loaded — draw first frame and setup scroll
-        drawFrame(0);
-        setupScroll();
-      }
-    };
-    frames.push(img);
+  Promise.all(
+    Array.from({ length: TOTAL }, (_, i) => {
+      const img = new Image();
+      img.src = `/iphone-frames/frame-${String(i).padStart(2, '0')}.webp`;
+      frames.push(img);
+      return img.decode ? img.decode().then(() => img) : new Promise(r => { img.onload = () => r(img); });
+    })
+  ).then(() => {
+    ready = true;
+    draw(0);
+    loop();
+  });
+
+  function draw(i) {
+    i = Math.max(0, Math.min(TOTAL - 1, Math.round(i)));
+    if (i === currentFrame) return;
+    currentFrame = i;
+    ctx.clearRect(0, 0, 400, 700);
+    ctx.drawImage(frames[i], 0, 0, 400, 700);
   }
 
-  function drawFrame(index) {
-    const i = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(index)));
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(frames[i], 0, 0, canvas.width, canvas.height);
-  }
-
-  function setupScroll() {
+  // Scroll-driven frame update via rAF (not scroll event)
+  function loop() {
+    if (!ready) return;
     const section = document.getElementById('study-anywhere');
-    const cards = gsap.utils.toArray('.scroll-card');
+    if (!section) return requestAnimationFrame(loop);
 
-    // Pin iPhone while scrolling
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: 'bottom bottom',
-      pin: '#iphone-pin-wrapper',
-      pinSpacing: false,
-    });
+    const rect = section.getBoundingClientRect();
+    const sectionH = section.offsetHeight;
+    const viewH = window.innerHeight;
 
-    // Frame sequence driven by scroll
-    const frameObj = { frame: 0 };
-    gsap.to(frameObj, {
-      frame: TOTAL_FRAMES - 1,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: section,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 0,
-        onUpdate: () => drawFrame(frameObj.frame),
+    // progress: 0 when section top hits viewport top, 1 when section bottom hits viewport bottom
+    const progress = Math.max(0, Math.min(1, -rect.top / (sectionH - viewH)));
+    draw(progress * (TOTAL - 1));
+
+    requestAnimationFrame(loop);
+  }
+
+  // Cards fade-in with IntersectionObserver (no GSAP needed)
+  const cards = document.querySelectorAll('.scroll-card[data-card]:not([data-card="0"])');
+  const cardObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+        cardObs.unobserve(e.target);
       }
     });
-
-    // Cards fade in
-    cards.forEach((card, i) => {
-      if (i === 0) return;
-      gsap.to(card, {
-        opacity: 1,
-        y: 0,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: card,
-          start: 'top 85%',
-          end: 'top 55%',
-          scrub: 0,
-        }
-      });
-    });
-  }
-}
+  }, { threshold: 0.2 });
+  cards.forEach(c => {
+    c.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    cardObs.observe(c);
+  });
+})();
