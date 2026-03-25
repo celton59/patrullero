@@ -1689,121 +1689,62 @@ import '../styles/global.css';
     <script type="module">
       import * as THREE from 'three';
       import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
       const container = document.getElementById('iphone-3d-container');
       if (container) {
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-        camera.position.set(0, 0, 4.5);
+        const camera = new THREE.PerspectiveCamera(30, container.clientWidth / container.clientHeight, 0.001, 10);
+        camera.position.set(0, 0, 0.45);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 2.0;
+        renderer.toneMappingExposure = 1.8;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         container.appendChild(renderer.domElement);
 
-        // Environment map for realistic reflections
+        // Environment map — realistic studio reflections
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
-        const envTexture = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
-        scene.environment = envTexture;
+        scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
         pmremGenerator.dispose();
 
         // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-        scene.add(ambientLight);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const key = new THREE.DirectionalLight(0xffffff, 2);
+        key.position.set(2, 3, 4);
+        scene.add(key);
+        const fill = new THREE.DirectionalLight(0x2159E2, 0.6);
+        fill.position.set(-3, 1, -2);
+        scene.add(fill);
 
-        const keyLight = new THREE.DirectionalLight(0xffffff, 3.0);
-        keyLight.position.set(3, 5, 6);
-        scene.add(keyLight);
+        // OrbitControls — auto rotate, no user zoom
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 1.5;
+        controls.enableZoom = false;
+        controls.enablePan = false;
+        controls.minPolarAngle = Math.PI * 0.35;
+        controls.maxPolarAngle = Math.PI * 0.65;
 
-        const fillLight = new THREE.DirectionalLight(0x4488ff, 1.2);
-        fillLight.position.set(-4, 2, 2);
-        scene.add(fillLight);
-
-        const rimLight = new THREE.DirectionalLight(0xaa66ff, 0.8);
-        rimLight.position.set(-2, -1, -4);
-        scene.add(rimLight);
-
-        // Back glow
-        const backGlow = new THREE.PointLight(0x2159E2, 3, 12);
-        backGlow.position.set(0, 0, -3);
-        scene.add(backGlow);
-
-        // Pivot group for rotation
-        const pivot = new THREE.Group();
-        scene.add(pivot);
-
-        // Load model
-        let phoneModel = null;
+        // Load model — no material overrides, keep original look
         const loader = new GLTFLoader();
         loader.load('/iphone-17-pro.glb', (gltf) => {
-          phoneModel = gltf.scene;
+          const model = gltf.scene;
 
-          // Center it
-          const box = new THREE.Box3().setFromObject(phoneModel);
+          // Center
+          const box = new THREE.Box3().setFromObject(model);
           const center = box.getCenter(new THREE.Vector3());
-          phoneModel.position.sub(center);
+          model.position.sub(center);
 
-          // Model is ~0.15 units tall, scale up to ~2.5 units so it fills the viewport
-          const scaleFactor = 16;
-          phoneModel.scale.setScalar(scaleFactor);
+          // Tilt slightly
+          model.rotation.x = THREE.MathUtils.degToRad(8);
 
-          // Override ALL materials for visibility on dark background
-          phoneModel.traverse((child) => {
-            if (child.isMesh && child.material) {
-              const mat = child.material;
-              const n = mat.name;
-
-              if (n === 'Frosted glass' || n === 'Tint back glass') {
-                // Back glass — silver/titanium
-                mat.color.set(0x9999aa);
-                mat.metalness = 0.85;
-                mat.roughness = 0.3;
-              } else if (n === 'Aluminum') {
-                mat.color.set(0xaaaabb);
-                mat.metalness = 0.95;
-                mat.roughness = 0.2;
-              } else if (n === 'Frame') {
-                mat.color.set(0x555566);
-                mat.metalness = 0.9;
-                mat.roughness = 0.15;
-              } else if (n === 'Display') {
-                // Screen — blue glow like it's on
-                mat.color.set(0x111133);
-                mat.emissive = new THREE.Color(0x0d1a3a);
-                mat.emissiveIntensity = 1.5;
-              } else if (n === 'Plastic antena') {
-                mat.color.set(0x777788);
-              } else if (n === 'Metal Screw') {
-                mat.color.set(0xaaaaaa);
-                mat.metalness = 0.95;
-              } else if (n === 'LED') {
-                mat.emissive = new THREE.Color(0xffcc66);
-                mat.emissiveIntensity = 2.0;
-              } else {
-                // Everything else — lift from pure black
-                const c = mat.color;
-                if (c.r < 0.1 && c.g < 0.1 && c.b < 0.1) {
-                  mat.color.set(0x222233);
-                }
-              }
-
-              mat.envMapIntensity = 2.5;
-              mat.needsUpdate = true;
-            }
-          });
-
-          pivot.add(phoneModel);
-
-          // Initial tilt
-          pivot.rotation.x = THREE.MathUtils.degToRad(5);
-          pivot.rotation.y = THREE.MathUtils.degToRad(-20);
-          pivot.rotation.z = THREE.MathUtils.degToRad(5);
-        }, undefined, (err) => {
-          console.warn('iPhone model failed to load:', err);
+          scene.add(model);
         });
 
         // Animate
@@ -1812,29 +1753,33 @@ import '../styles/global.css';
           requestAnimationFrame(animate);
           const t = clock.getElapsedTime();
 
-          if (pivot.children.length > 0) {
-            // Gentle float
-            pivot.position.y = Math.sin(t * 0.8) * 0.05;
-            // Slow rotation
-            pivot.rotation.y = THREE.MathUtils.degToRad(-20) + Math.sin(t * 0.4) * 0.12;
+          // Float up/down
+          scene.children.forEach(c => {
+            if (c.isGroup || c.isObject3D) {
+              // only float the model, not lights
+            }
+          });
+          if (scene.children.length > 4) {
+            // Model is the last child added
+            const model = scene.children[scene.children.length - 1];
+            if (model.isGroup || model.isObject3D) {
+              model.position.y = -0.0 + Math.sin(t * 0.8) * 0.005;
+            }
           }
 
-          // Back glow pulse
-          backGlow.intensity = 2 + Math.sin(t * 0.6) * 0.5;
-
+          controls.update();
           renderer.render(scene, camera);
         }
         animate();
 
         // Resize
-        const ro = new ResizeObserver(() => {
+        new ResizeObserver(() => {
           const w = container.clientWidth;
           const h = container.clientHeight;
           camera.aspect = w / h;
           camera.updateProjectionMatrix();
           renderer.setSize(w, h);
-        });
-        ro.observe(container);
+        }).observe(container);
       }
     </script>
 
