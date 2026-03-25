@@ -1,6 +1,7 @@
-// iPhone frame sequence — CSS sticky + rAF (no GSAP pin)
+// iPhone frame sequence — CSS sticky (desktop) + inline (mobile)
 (() => {
-  const container = document.getElementById('iphone-3d-container');
+  // Pick container: desktop (sticky) or mobile (inline)
+  const container = document.getElementById('iphone-3d-container') || document.getElementById('iphone-3d-container-mobile');
   if (!container) return;
 
   const TOTAL = 48;
@@ -11,6 +12,19 @@
   canvas.style.height = '100%';
   canvas.style.objectFit = 'contain';
   container.appendChild(canvas);
+
+  // Also add canvas to mobile container if desktop exists
+  const mobileContainer = document.getElementById('iphone-3d-container-mobile');
+  if (mobileContainer && container.id !== 'iphone-3d-container-mobile') {
+    const canvas2 = document.createElement('canvas');
+    canvas2.width = 400;
+    canvas2.height = 700;
+    canvas2.style.width = '100%';
+    canvas2.style.height = '100%';
+    canvas2.style.objectFit = 'contain';
+    mobileContainer.appendChild(canvas2);
+  }
+
   const ctx = canvas.getContext('2d');
 
   // Preload + decode all frames
@@ -39,36 +53,33 @@
     ctx.drawImage(frames[i], 0, 0, 400, 700);
   }
 
-  // Scroll-driven frame update via rAF (not scroll event)
+  // rAF loop — reads scroll, draws frame
   function loop() {
     if (!ready) return;
     const section = document.getElementById('study-anywhere');
-    if (!section) return requestAnimationFrame(loop);
+    if (!section) { requestAnimationFrame(loop); return; }
 
     const rect = section.getBoundingClientRect();
     const sectionH = section.offsetHeight;
     const viewH = window.innerHeight;
-
-    // progress: 0 when section top hits viewport top, 1 when section bottom hits viewport bottom
     const progress = Math.max(0, Math.min(1, -rect.top / (sectionH - viewH)));
     draw(progress * (TOTAL - 1));
-
     requestAnimationFrame(loop);
   }
 
-  // Cards fade-in with IntersectionObserver (no GSAP needed)
+  // Cards: IntersectionObserver fade-in
   const cards = document.querySelectorAll('.scroll-card[data-card]:not([data-card="0"])');
-  const cardObs = new IntersectionObserver((entries) => {
+  const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
         e.target.style.opacity = '1';
         e.target.style.transform = 'translateY(0)';
-        cardObs.unobserve(e.target);
+        obs.unobserve(e.target);
       }
     });
   }, { threshold: 0.2 });
   cards.forEach(c => {
     c.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    cardObs.observe(c);
+    obs.observe(c);
   });
 })();

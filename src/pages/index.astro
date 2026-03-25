@@ -610,19 +610,24 @@ import '../styles/global.css';
       </section>
 
       <!-- ============ STUDY ANYWHERE — 3D iPhone + Scroll Pin ============ -->
-      <section id="study-anywhere" class="relative overflow-hidden">
+      <section id="study-anywhere" class="relative">
         <!-- Background glow -->
         <div class="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-[#2159E2]/8 rounded-full blur-[120px] pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div class="grid lg:grid-cols-2 gap-0 items-start min-h-screen">
-            <!-- Left: iPhone (CSS sticky — compositor-optimized, no JS pin) -->
-            <div id="iphone-pin-wrapper" class="relative flex items-center justify-center sticky top-0 self-start" style="height:100vh;">
-              <div id="iphone-3d-container" style="width:100%; height:100vh;"></div>
+          <div class="grid lg:grid-cols-2 gap-0 items-start">
+            <!-- Left: iPhone (CSS sticky — runs on compositor thread) -->
+            <div id="iphone-pin-wrapper" class="hidden lg:flex items-center justify-center sticky top-0" style="height:100vh;">
+              <div id="iphone-3d-container" style="width:100%; height:80vh;"></div>
+            </div>
+
+            <!-- Mobile: iPhone fixed inline -->
+            <div class="lg:hidden flex items-center justify-center" style="height:50vh;">
+              <div id="iphone-3d-container-mobile" style="width:100%; height:50vh;"></div>
             </div>
 
             <!-- Right: Scroll content — headline + cards stack -->
-            <div id="scroll-cards" class="py-[30vh] lg:py-[40vh] space-y-[40vh]">
+            <div id="scroll-cards" class="py-[20vh] lg:py-[40vh] space-y-[30vh] lg:space-y-[40vh]">
               <!-- Headline (appears first) -->
               <div class="scroll-card" data-card="0">
                 <div class="inline-flex items-center gap-2 px-4 py-2 border-0 rounded-full bg-[#2159E2]/10 mb-6">
