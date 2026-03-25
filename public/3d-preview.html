@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPhone 17 Pro - Study App Showcase</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+        }
+        #scene-container {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="scene-container"></div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0a0a0a, 0.04);
+
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        document.getElementById('scene-container').appendChild(renderer.domElement);
+
+        camera.position.set(0, 0.5, 7);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 4;
+        controls.maxDistance = 14;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.3;
+        controls.enablePan = false;
+        controls.maxPolarAngle = Math.PI * 0.7;
+        controls.minPolarAngle = Math.PI * 0.3;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404060, 0.4);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        mainLight.position.set(5, 8, 5);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        mainLight.shadow.camera.near = 0.5;
+        mainLight.shadow.camera.far = 50;
+        mainLight.shadow.bias = -0.0001;
+        scene.add(mainLight);
+
+        const fillLight = new THREE.DirectionalLight(0x2159E2, 0.4);
+        fillLight.position.set(-3, 2, -3);
+        scene.add(fillLight);
+
+        const rimLight = new THREE.DirectionalLight(0x8844ff, 0.6);
+        rimLight.position.set(-5, 3, -5);
+        scene.add(rimLight);
+
+        const backGlow = new THREE.PointLight(0x2159E2, 2, 15);
+        backGlow.position.set(0, 0, -3);
+        scene.add(backGlow);
+
+        const purpleGlow = new THREE.PointLight(0x7733ff, 1.5, 12);
+        purpleGlow.position.set(2, -1, -2);
+        scene.add(purpleGlow);
+
+        // Background radial glow
+        function createBackgroundGlow() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(512, 512, 0, 512, 512, 512);
+            grad.addColorStop(0, 'rgba(33,89,226,0.15)');
+            grad.addColorStop(0.3, 'rgba(100,50,200,0.08)');
+            grad.addColorStop(0.7, 'rgba(10,10,10,0.02)');
+            grad.addColorStop(1, 'rgba(10,10,10,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 1024, 1024);
+            const tex = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 1, depthWrite: false });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(20, 20, 1);
+            sprite.position.z = -5;
+            scene.add(sprite);
+        }
+        createBackgroundGlow();
+
+        // Starfield
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsVertices = [];
+        const starsColors = [];
+        for (let i = 0; i < 8000; i++) {
+            const x = (Math.random() - 0.5) * 200;
+            const y = (Math.random() - 0.5) * 200;
+            const z = (Math.random() - 0.5) * 200;
+            starsVertices.push(x, y, z);
+            const c = new THREE.Color();
+            c.setHSL(Math.random() * 0.2 + 0.55, 0.4, Math.random() * 0.3 + 0.7);
+            starsColors.push(c.r, c.g, c.b);
+        }
+        starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+        starsGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starsColors, 3));
+        const starsMat = new THREE.PointsMaterial({ size: 0.03, transparent: true, opacity: 0.6, sizeAttenuation: true, vertexColors: true });
+        scene.add(new THREE.Points(starsGeometry, starsMat));
+
+        // Dust particles
+        const dustGeo = new THREE.BufferGeometry();
+        const dustPositions = [];
+        const dustSizes = [];
+        for (let i = 0; i < 500; i++) {
+            dustPositions.push((Math.random() - 0.5) * 15, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 15);
+            dustSizes.push(Math.random() * 0.03 + 0.01);
+        }
+        dustGeo.setAttribute('position', new THREE.Float32BufferAttribute(dustPositions, 3));
+        dustGeo.setAttribute('size', new THREE.Float32BufferAttribute(dustSizes, 1));
+
+        const dustMat = new THREE.ShaderMaterial({
+            uniforms: { time: { value: 0 }, color: { value: new THREE.Color(0x4488ff) } },
+            vertexShader: `
+                attribute float size;
+                uniform float time;
+                varying float vAlpha;
+                void main() {
+                    vec3 pos = position;
+                    pos.y += sin(time * 0.3 + position.x * 2.0) * 0.2;
+                    pos.x += cos(time * 0.2 + position.z) * 0.1;
+                    vAlpha = 0.3 + 0.3 * sin(time + position.x * 5.0);
+                    vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
+                    gl_PointSize = size * 300.0 / -mvPos.z;
+                    gl_Position = projectionMatrix * mvPos;
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 color;
+                varying float vAlpha;
+                void main() {
+                    float d = length(gl_PointCoord - 0.5) * 2.0;
+                    if (d > 1.0) discard;
+                    float alpha = (1.0 - d * d) * vAlpha;
+                    gl_FragColor = vec4(color, alpha);
+                }
+            `,
+            transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+        });
+        scene.add(new THREE.Points(dustGeo, dustMat));
+
+        // Helper: create text sprite
+        function createTextSprite(text, fontSize = 48, color = '#ffffff') {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 512, 128);
+            ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(33,89,226,0.6)';
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = color;
+            ctx.fillText(text, 256, 64);
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.minFilter = THREE.LinearFilter;
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(1.4, 0.35, 1);
+            return sprite;
+        }
+
+        // Helper: rounded box (simple approach)
+        function createRoundedBox(w, h, d, r, color) {
+            const geo = new RoundedBoxGeometry(w, h, d, 4, r);
+            const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.7 });
+            return new THREE.Mesh(geo, mat);
+        }
+
+        // ===================== IPHONE 17 PRO =====================
+        function createiPhone() {
+            const phoneGroup = new THREE.Group();
+
+            // Phone body
+            const bodyGeo = new RoundedBoxGeometry(1.4, 2.85, 0.15, 6, 0.08);
+            const bodyMat = new THREE.MeshStandardMaterial({
+                color: 0x1a1a1a,
+                roughness: 0.15,
+                metalness: 0.95,
+                envMapIntensity: 1.5
+            });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.castShadow = true;
+            phoneGroup.add(body);
+
+            // Titanium frame edge
+            const frameMat = new THREE.MeshStandardMaterial({ color: 0x3a3a3e, roughness: 0.2, metalness: 0.98 });
+            const frameOuter = new RoundedBoxGeometry(1.44, 2.89, 0.155, 6, 0.09);
+            const frame = new THREE.Mesh(frameOuter, frameMat);
+            frame.castShadow = true;
+            phoneGroup.add(frame);
+
+            // Screen
+            const screenGeo = new THREE.PlaneGeometry(1.24, 2.68);
+            const screenCanvas = document.createElement('canvas');
+            screenCanvas.width = 496;
+            screenCanvas.height = 1072;
+            const sctx = screenCanvas.getContext('2d');
+
+            // Dark themed study app UI
+            sctx.fillStyle = '#0d0d0f';
+            sctx.fillRect(0, 0, 496, 1072);
+
+            // Status bar
+            sctx.fillStyle = '#888';
+            sctx.font = 'bold 16px sans-serif';
+            sctx.fillText('9:41', 20, 28);
+            sctx.fillText('●●●', 430, 28);
+
+            // Dynamic Island
+            sctx.fillStyle = '#000';
+            sctx.beginPath();
+            sctx.roundRect(170, 8, 156, 30, 15);
+            sctx.fill();
+
+            // App header
+            sctx.fillStyle = '#ffffff';
+            sctx.font = 'bold 28px sans-serif';
+            sctx.fillText('Mi Progreso', 20, 90);
+
+            sctx.fillStyle = '#888';
+            sctx.font = '14px sans-serif';
+            sctx.fillText('Hoy has estudiado 47 min 🔥', 20, 118);
+
+            // Streak card
+            const cardGrad = sctx.createLinearGradient(20, 140, 476, 230);
+            cardGrad.addColorStop(0, '#1a237e');
+            cardGrad.addColorStop(1, '#2159E2');
+            sctx.fillStyle = cardGrad;
+            sctx.beginPath();
+            sctx.roundRect(20, 140, 456, 100, 16);
+            sctx.fill();
+
+            sctx.fillStyle = '#fff';
+            sctx.font = 'bold 20px sans-serif';
+            sctx.fillText('🔥 Racha de 12 días', 42, 175);
+            sctx.font = '14px sans-serif';
+            sctx.fillStyle = 'rgba(255,255,255,0.8)';
+            sctx.fillText('¡Sigue así! Meta: 30 días seguidos', 42, 200);
+
+            // Progress bar in card
+            sctx.fillStyle = 'rgba(255,255,255,0.2)';
+            sctx.beginPath(); sctx.roundRect(42, 215, 412, 8, 4); sctx.fill();
+            sctx.fillStyle = '#4fc3f7';
+            sctx.beginPath(); sctx.roundRect(42, 215, 164, 8, 4); sctx.fill();
+
+            // Subject cards
+            const subjects = [
+                { name: 'Matemáticas', icon: '📐', progress: 0.72, color: '#2159E2', hours: '2.4h' },
+                { name: 'Biología', icon: '🧬', progress: 0.58, color: '#00c853', hours: '1.8h' },
+                { name: 'Historia', icon: '📚', progress: 0.41, color: '#ff6f00', hours: '1.2h' },
+                { name: 'Física', icon: '⚡', progress: 0.85, color: '#aa00ff', hours: '3.1h' }
+            ];
+
+            sctx.fillStyle = '#fff';
+            sctx.font = 'bold 18px sans-serif';
+            sctx.fillText('Materias', 20, 290);
+
+            subjects.forEach((sub, i) => {
+                const y = 310 + i * 90;
+                sctx.fillStyle = '#141418';
+                sctx.beginPath(); sctx.roundRect(20, y, 456, 75, 14); sctx.fill();
+
+                sctx.font = '24px sans-serif';
+                sctx.fillText(sub.icon, 36, y + 35);
+                sctx.fillStyle = '#fff';
+                sctx.font = 'bold 16px sans-serif';
+                sctx.fillText(sub.name, 70, y + 28);
+                sctx.fillStyle = '#888';
+                sctx.font = '13px sans-serif';
+                sctx.fillText(`${Math.round(sub.progress * 100)}% completado · ${sub.hours} esta semana`, 70, y + 50);
+
+                // Progress bar bg
+                sctx.fillStyle = '#2a2a30';
+                sctx.beginPath(); sctx.roundRect(70, y + 58, 380, 6, 3); sctx.fill();
+                // Progress bar fill
+                sctx.fillStyle = sub.color;
+                sctx.beginPath(); sctx.roundRect(70, y + 58, 380 * sub.progress, 6, 3); sctx.fill();
+            });
+
+            // Bottom nav
+            sctx.fillStyle = '#111115';
+            sctx.fillRect(0, 1010, 496, 62);
+            sctx.strokeStyle = '#222';
+            sctx.lineWidth = 1;
+            sctx.beginPath(); sctx.moveTo(0, 1010); sctx.lineTo(496, 1010); sctx.stroke();
+
+            const navItems = ['🏠', '📊', '🎯', '👤'];
+            const navLabels = ['Inicio', 'Stats', 'Metas', 'Perfil'];
+            navItems.forEach((item, i) => {
+                const x = 60 + i * 110;
+                sctx.font = '22px sans-serif';
+                sctx.fillText(item, x, 1038);
+                sctx.fillStyle = i === 0 ? '#2159E2' : '#555';
+                sctx.font = '11px sans-serif';
+                sctx.fillText(navLabels[i], x - 5, 1055);
+                sctx.fillStyle = '#fff';
+            });
+
+            // Home indicator
+            sctx.fillStyle = '#555';
+            sctx.beginPath(); sctx.roundRect(180, 1060, 136, 4, 2); sctx.fill();
+
+            const screenTex = new THREE.CanvasTexture(screenCanvas);
+            screenTex.minFilter = THREE.LinearFilter;
+            const screenMat = new THREE.MeshBasicMaterial({ map: screenTex });
+            const screen = new THREE.Mesh(screenGeo, screenMat);
+            screen.position.z = 0.077;
+            phoneGroup.add(screen);
+
+            // Screen glass reflection overlay
+            const glassGeo = new THREE.PlaneGeometry(1.24, 2.68);
+            const glassMat = new THREE.MeshPhysicalMaterial({
+                transparent: true,
+                opacity: 0.08,
+                roughness: 0.05,
+                metalness: 0.1,
+                color: 0xffffff,
+                depthWrite: false
+            });
+            const glass = new THREE.Mesh(glassGeo, glassMat);
+            glass.position.z = 0.079;
+            phoneGroup.add(glass);
+
+            // Camera module
+            const camModule = new THREE.Group();
+            const camPlateMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.1, metalness: 0.95 });
+            const camPlate = new THREE.Mesh(new RoundedBoxGeometry(0.55, 0.55, 0.04, 4, 0.06), camPlateMat);
+            camPlate.position.z = -0.09;
+            camModule.add(camPlate);
+
+            // 3 camera lenses
+            const lensPositions = [[-0.13, 0.13], [0.13, 0.13], [-0.13, -0.13]];
+            lensPositions.forEach(([lx, ly]) => {
+                const lensRing = new THREE.Mesh(
+                    new THREE.TorusGeometry(0.07, 0.012, 16, 32),
+                    new THREE.MeshStandardMaterial({ color: 0x333340, roughness: 0.1, metalness: 0.98 })
+                );
+                lensRing.position.set(lx, ly, -0.108);
+                camModule.add(lensRing);
+                const lens = new THREE.Mesh(
+                    new THREE.CircleGeometry(0.055, 32),
+                    new THREE.MeshStandardMaterial({ color: 0x0a0a12, roughness: 0.0, metalness: 0.3 })
+                );
+                lens.position.set(lx, ly, -0.109);
+                lens.rotation.y = Math.PI;
+                camModule.add(lens);
+            });
+
+            // Flash
+            const flash = new THREE.Mesh(
+                new THREE.CircleGeometry(0.025, 16),
+                new THREE.MeshStandardMaterial({ color: 0xffffdd, emissive: 0x332200, roughness: 0.5 })
+            );
+            flash.position.set(0.13, -0.13, -0.109);
+            flash.rotation.y = Math.PI;
+            camModule.add(flash);
+
+            camModule.position.set(-0.28, 0.9, 0);
+            phoneGroup.add(camModule);
+
+            // Tilt phone 15 degrees
+            phoneGroup.rotation.x = THREE.MathUtils.degToRad(-5);
+            phoneGroup.rotation.z = THREE.MathUtils.degToRad(-15);
+            phoneGroup.rotation.y = THREE.MathUtils.degToRad(8);
+
+            return phoneGroup;
+        }
+
+        const phone = createiPhone();
+        scene.add(phone);
+
+        // ===================== MICRO-SCENE PLATFORMS =====================
+        function createPlatform(width = 1.2, depth = 1.2) {
+            const group = new THREE.Group();
+
+            // Main platform
+            const platGeo = new RoundedBoxGeometry(width, 0.12, depth, 4, 0.03);
+            const platMat = new THREE.MeshStandardMaterial({
+                color: 0x111118,
+                roughness: 0.2,
+                metalness: 0.8
+            });
+            const plat = new THREE.Mesh(platGeo, platMat);
+            plat.castShadow = true;
+            plat.receiveShadow = true;
+            group.add(plat);
+
+            // Neon edge glow
+            const edgeGeo = new RoundedBoxGeometry(width + 0.02, 0.02, depth + 0.02, 4, 0.01);
+            const edgeMat = new THREE.MeshBasicMaterial({ color: 0x2159E2, transparent: true, opacity: 0.6 });
+            const edge = new THREE.Mesh(edgeGeo, edgeMat);
+            edge.position.y = -0.06;
+            group.add(edge);
+
+            // Bottom glow
+            const glowLight = new THREE.PointLight(0x5533ff, 0.5, 2);
+            glowLight.position.y = -0.2;
+            group.add(glowLight);
+
+            return group;
+        }
+
+        // Helper: simple box mesh
+        function box(w, h, d, color, mat) {
+            const m = mat || new THREE.MeshStandardMaterial({ color, roughness: 0.5, metalness: 0.3 });
+            const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            return mesh;
+        }
+
+        // Helper: cylinder
+        function cyl(rT, rB, h, color, seg = 16) {
+            const m = new THREE.MeshStandardMaterial({ color, roughness: 0.5, metalness: 0.3 });
+            const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rT, rB, h, seg), m);
+            mesh.castShadow = true;
+            return mesh;
+        }
+
+        // Helper: emissive mesh
+        function emissiveBox(w, h, d, color, intensity = 1) {
+            const mat = new THREE.MeshStandardMaterial({
+                color, emissive: color, emissiveIntensity: intensity, roughness: 0.3, metalness: 0.2
+            });
+            return new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+        }
+
+        // ===================== SCENE 1: BUS STOP =====================
+        function createBusStopScene() {
+            const group = new THREE.Group();
+            const platform = createPlatform(1.6, 1.2);
+            group.add(platform);
+
+            // Bus stop shelter
+            // Poles
+            const poleMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.3, metalness: 0.8 });
+            const pole1 = cyl(0.015, 0.015, 0.5, 0x888888);
+            pole1.position.set(-0.3, 0.31, 0.15);
+            group.add(pole1);
+            const pole2 = cyl(0.015, 0.015, 0.5, 0x888888);
+            pole2.position.set(0.3, 0.31, 0.15);
+            group.add(pole2);
+
+            // Roof
+            const roof = box(0.7, 0.02, 0.35, 0x444455);
+            roof.position.set(0, 0.56, 0.1);
+            group.add(roof);
+
+            // Bench
+            const benchSeat = box(0.45, 0.025, 0.12, 0x664422);
+            benchSeat.position.set(0, 0.18, 0.12);
+            group.add(benchSeat);
+            const benchLeg1 = box(0.02, 0.1, 0.02, 0x555555);
+            benchLeg1.position.set(-0.18, 0.12, 0.12);
+            group.add(benchLeg1);
+            const benchLeg2 = box(0.02, 0.1, 0.02, 0x555555);
+            benchLeg2.position.set(0.18, 0.12, 0.12);
+            group.add(benchLeg2);
+
+            // Tiny person sitting
+            // Body
+            const torso = box(0.06, 0.1, 0.05, 0x2244aa);
+            torso.position.set(0.02, 0.25, 0.12);
+            group.add(torso);
+            // Head
+            const head = new THREE.Mesh(
+                new THREE.SphereGeometry(0.035, 12, 12),
+                new THREE.MeshStandardMaterial({ color: 0xffcc99, roughness: 0.6 })
+            );
+            head.position.set(0.02, 0.34, 0.12);
+            group.add(head);
+            // Legs
+            const leg1 = box(0.025, 0.08, 0.025, 0x333355);
+            leg1.position.set(-0.0, 0.15, 0.14);
+            leg1.rotation.x = -0.3;
+            group.add(leg1);
+            const leg2 = box(0.025, 0.08, 0.025, 0x333355);
+            leg2.position.set(0.04, 0.15, 0.14);
+            leg2.rotation.x = -0.3;
+            group.add(leg2);
+
+            // Tiny phone in hand (glowing)
+            const tinyPhone = emissiveBox(0.02, 0.035, 0.005, 0x2159E2, 2);
+            tinyPhone.position.set(0.02, 0.24, 0.17);
+            tinyPhone.rotation.x = -0.4;
+            group.add(tinyPhone);
+
+            // Phone glow light
+            const phoneGlow = new THREE.PointLight(0x2159E2, 0.5, 0.5);
+            phoneGlow.position.copy(tinyPhone.position);
+            group.add(phoneGlow);
+
+            // Street light
+            const lightPole = cyl(0.012, 0.015, 0.7, 0x555555);
+            lightPole.position.set(-0.5, 0.41, -0.1);
+            group.add(lightPole);
+            const lightHead = box(0.06, 0.02, 0.04, 0x444444);
+            lightHead.position.set(-0.5, 0.76, -0.1);
+            group.add(lightHead);
+            const streetGlow = emissiveBox(0.04, 0.01, 0.03, 0xffaa44, 3);
+            streetGlow.position.set(-0.5, 0.74, -0.1);
+            group.add(streetGlow);
+
+            const warmLight = new THREE.PointLight(0xffaa44, 0.8, 1.5);
+            warmLight.position.set(-0.5, 0.7, -0.1);
+            warmLight.castShadow = true;
+            group.add(warmLight);
+
+            // Ground detail - road
+            const road = box(1.4, 0.005, 0.4, 0x222222);
+            road.position.set(0, 0.065, -0.2);
+            group.add(road);
+
+            // Road line
+            const roadLine = emissiveBox(0.15, 0.006, 0.015, 0xffff88, 0.5);
+            roadLine.position.set(0, 0.07, -0.2);
+            group.add(roadLine);
+
+            // Text
+            const label = createTextSprite('En el bus 🚌', 42, '#ffcc66');
+            label.position.set(0, 0.9, 0);
+            group.add(label);
+
+            return group;
+        }
+
+        // ===================== SCENE 2: COFFEE CUP =====================
+        function createCoffeeScene() {
+            const group = new THREE.Group();
+            const platform = createPlatform(1.2, 1.2);
+            group.add(platform);
+
+            // Coffee cup
+            const cupGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.2, 24);
+            const cupMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0.1 });
+            const cup = new THREE.Mesh(cupGeo, cupMat);
+            cup.position.set(0, 0.17, 0);
+            cup.castShadow = true;
+            group.add(cup);
+
+            // Cup interior (dark coffee)
+            const coffeeSurface = new THREE.Mesh(
+                new THREE.CircleGeometry(0.09, 24),
+                new THREE.MeshStandardMaterial({ color: 0x3a1a00, roughness: 0.8 })
+            );
+            coffeeSurface.rotation.x = -Math.PI / 2;
+            coffeeSurface.position.set(0, 0.27, 0);
+            group.add(coffeeSurface);
+
+            // Cup handle
+            const handleGeo = new THREE.TorusGeometry(0.04, 0.012, 8, 16, Math.PI);
+            const handle = new THREE.Mesh(handleGeo, cupMat);
+            handle.position.set(0.12, 0.18, 0);
+            handle.rotation.z = -Math.PI / 2;
+            group.add(handle);
+
+            // Saucer
+            const saucer = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.16, 0.14, 0.025, 24),
+                new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: 0.3, metalness: 0.1 })
+            );
+            saucer.position.set(0, 0.075, 0);
+            saucer.castShadow = true;
+            group.add(saucer);
+
+            // Steam particles as holographic study notes
+            const steamGroup = new THREE.Group();
+            const noteColors = [0x2159E2, 0x44aaff, 0x8866ff, 0x66ddff];
+            for (let i = 0; i < 12; i++) {
+                const noteGeo = new THREE.PlaneGeometry(0.06 + Math.random() * 0.04, 0.025 + Math.random() * 0.015);
+                const noteMat = new THREE.MeshBasicMaterial({
+                    color: noteColors[i % noteColors.length],
+                    transparent: true,
+                    opacity: 0.6,
+                    side: THREE.DoubleSide,
+                    depthWrite: false
+                });
+                const note = new THREE.Mesh(noteGeo, noteMat);
+                const angle = (i / 12) * Math.PI * 2;
+                const radius = 0.05 + Math.random() * 0.08;
+                note.position.set(
+                    Math.cos(angle) * radius,
+                    0.35 + i * 0.05 + Math.random() * 0.05,
+                    Math.sin(angle) * radius
+                );
+                note.rotation.set(Math.random() * 0.5, angle, Math.random() * 0.3);
+                note.userData.baseY = note.position.y;
+                note.userData.angle = angle;
+                note.userData.radius = radius;
+                note.userData.speed = 0.5 + Math.random() * 0.5;
+                steamGroup.add(note);
+            }
+            steamGroup.position.set(0, 0, 0);
+            group.add(steamGroup);
+            group.userData.steamGroup = steamGroup;
+
+            // Warm cup glow
+            const cupLight = new THREE.PointLight(0xff8844, 0.3, 1);
+            cupLight.position.set(0, 0.3, 0);
+            group.add(cupLight);
+
+            // Text
+            const label = createTextSprite('5 min con el café ☕', 36, '#ffcc88');
+            label.position.set(0, 0.95, 0);
+            group.add(label);
+
+            return group;
+        }
+
+        // ===================== SCENE 3: COUCH =====================
+        function createCouchScene() {
+            const group = new THREE.Group();
+            const platform = createPlatform(1.4, 1.2);
+            group.add(platform);
+
+            // Couch base
+            const couchBase = box(0.6, 0.1, 0.25, 0x553322);
+            couchBase.position.set(0, 0.12, 0);
+            group.add(couchBase);
+
+            // Couch back
+            const couchBack = box(0.6, 0.18, 0.06, 0x553322);
+            couchBack.position.set(0, 0.22, -0.1);
+            group.add(couchBack);
+
+            // Couch cushions
+            const cushionMat = new THREE.MeshStandardMaterial({ color: 0x6644aa, roughness: 0.7, metalness: 0.05 });
+            const cushion1 = new THREE.Mesh(new RoundedBoxGeometry(0.25, 0.06, 0.18, 3, 0.02), cushionMat);
+            cushion1.position.set(-0.13, 0.19, 0.01);
+            group.add(cushion1);
+            const cushion2 = new THREE.Mesh(new RoundedBoxGeometry(0.25, 0.06, 0.18, 3, 0.02), cushionMat);
+            cushion2.position.set(0.13, 0.19, 0.01);
+            group.add(cushion2);
+
+            // Armrests
+            const armrest1 = box(0.06, 0.14, 0.25, 0x553322);
+            armrest1.position.set(-0.33, 0.14, 0);
+            group.add(armrest1);
+            const armrest2 = box(0.06, 0.14, 0.25, 0x553322);
+            armrest2.position.set(0.33, 0.14, 0);
+            group.add(armrest2);
+
+            // Couch legs
+            [[-0.25, -0.08], [0.25, -0.08], [-0.25, 0.08], [0.25, 0.08]].forEach(([x, z]) => {
+                const leg = cyl(0.015, 0.015, 0.05, 0x333333);
+                leg.position.set(x, 0.065, z);
+                group.add(leg);
+            });
+
+            // Tiny person lounging
+            const personTorso = box(0.05, 0.04, 0.1, 0x33aa55);
+            personTorso.position.set(0.05, 0.25, 0.03);
+            personTorso.rotation.x = -0.8;
+            group.add(personTorso);
+
+            const personHead = new THREE.Mesh(
+                new THREE.SphereGeometry(0.03, 10, 10),
+                new THREE.MeshStandardMaterial({ color: 0xddaa77, roughness: 0.6 })
+            );
+            personHead.position.set(0.05, 0.27, -0.04);
+            group.add(personHead);
+
+            // Legs
+            const pLeg1 = box(0.02, 0.07, 0.02, 0x224488);
+            pLeg1.position.set(0.03, 0.22, 0.1);
+            pLeg1.rotation.x = -0.2;
+            group.add(pLeg1);
+            const pLeg2 = box(0.02, 0.07, 0.02, 0x224488);
+            pLeg2.position.set(0.07, 0.22, 0.1);
+            pLeg2.rotation.x = -0.2;
+            group.add(pLeg2);
+
+            // Tablet in hands
+            const tablet = emissiveBox(0.06, 0.001, 0.04, 0x2159E2, 1.5);
+            tablet.position.set(0.05, 0.26, 0.03);
+            tablet.rotation.x = -0.6;
+            group.add(tablet);
+
+            // Holographic UI projection
+            const holoGroup = new THREE.Group();
+            // Main holo panel
+            const holoPanel = new THREE.Mesh(
+                new THREE.PlaneGeometry(0.18, 0.12),
+                new THREE.MeshBasicMaterial({
+                    color: 0x2159E2, transparent: true, opacity: 0.25,
+                    side: THREE.DoubleSide, depthWrite: false
+                })
+            );
+            holoPanel.position.set(0.05, 0.48, 0.03);
+            holoPanel.rotation.x = -0.3;
+            holoGroup.add(holoPanel);
+
+            // Holo UI elements
+            for (let i = 0; i < 4; i++) {
+                const bar = new THREE.Mesh(
+                    new THREE.PlaneGeometry(0.12 * (0.4 + Math.random() * 0.6), 0.008),
+                    new THREE.MeshBasicMaterial({
+                        color: 0x44aaff, transparent: true, opacity: 0.5,
+                        side: THREE.DoubleSide, depthWrite: false
+                    })
+                );
+                bar.position.set(0.05, 0.44 + i * 0.025, 0.04);
+                bar.rotation.x = -0.3;
+                holoGroup.add(bar);
+            }
+
+            group.add(holoGroup);
+            group.userData.holoGroup = holoGroup;
+
+            const tabletGlow = new THREE.PointLight(0x2159E2, 0.4, 0.8);
+            tabletGlow.position.set(0.05, 0.35, 0.03);
+            group.add(tabletGlow);
+
+            // Side table
+            const sideTable = box(0.12, 0.16, 0.12, 0x443322);
+            sideTable.position.set(-0.5, 0.14, -0.05);
+            group.add(sideTable);
+
+            // Text
+            const label = createTextSprite('En el sofá 🛋️', 40, '#bb88ff');
+            label.position.set(0, 0.8, 0);
+            group.add(label);
+
+            return group;
+        }
+
+        // ===================== SCENE 4: BED =====================
+        function createBedScene() {
+            const group = new THREE.Group();
+            const platform = createPlatform(1.4, 1.2);
+            group.add(platform);
+
+            // Bed frame
+            const bedFrame = box(0.55, 0.08, 0.7, 0x443322);
+            bedFrame.position.set(0, 0.1, 0);
+            group.add(bedFrame);
+
+            // Headboard
+            const headboard = box(0.55, 0.25, 0.04, 0x554433);
+            headboard.position.set(0, 0.2, -0.34);
+            group.add(headboard);
+
+            // Mattress
+            const mattress = new THREE.Mesh(
+                new RoundedBoxGeometry(0.5, 0.07, 0.6, 3, 0.02),
+                new THREE.MeshStandardMaterial({ color: 0xeeeedd, roughness: 0.8 })
+            );
+            mattress.position.set(0, 0.17, 0.02);
+            group.add(mattress);
+
+            // Blanket
+            const blanket = new THREE.Mesh(
+                new RoundedBoxGeometry(0.48, 0.03, 0.35, 3, 0.01),
+                new THREE.MeshStandardMaterial({ color: 0x334466, roughness: 0.8 })
+            );
+            blanket.position.set(0, 0.2, 0.12);
+            group.add(blanket);
+
+            // Pillows
+            const pillowMat = new THREE.MeshStandardMaterial({ color: 0xddddcc, roughness: 0.7 });
+            const pillow1 = new THREE.Mesh(new RoundedBoxGeometry(0.18, 0.04, 0.12, 3, 0.02), pillowMat);
+            pillow1.position.set(-0.1, 0.22, -0.2);
+            pillow1.rotation.y = 0.1;
+            group.add(pillow1);
+            const pillow2 = new THREE.Mesh(new RoundedBoxGeometry(0.18, 0.04, 0.12, 3, 0.02), pillowMat);
+            pillow2.position.set(0.12, 0.22, -0.22);
+            pillow2.rotation.y = -0.08;
+            group.add(pillow2);
+
+            // Phone on pillow (glowing)
+            const phoneOnBed = emissiveBox(0.04, 0.005, 0.07, 0x2159E2, 2.5);
+            phoneOnBed.position.set(0.01, 0.25, -0.18);
+            phoneOnBed.rotation.y = 0.2;
+            group.add(phoneOnBed);
+
+            // Phone light casting on pillows
+            const phoneLight = new THREE.PointLight(0x2159E2, 0.8, 0.8);
+            phoneLight.position.set(0.01, 0.35, -0.18);
+            phoneLight.castShadow = true;
+            group.add(phoneLight);
+
+            // Stars and moon particles above
+            const starParticles = new THREE.Group();
+            for (let i = 0; i < 30; i++) {
+                const starSize = 0.008 + Math.random() * 0.012;
+                const star = new THREE.Mesh(
+                    new THREE.SphereGeometry(starSize, 6, 6),
+                    new THREE.MeshBasicMaterial({
+                        color: new THREE.Color().setHSL(0.6 + Math.random() * 0.15, 0.5, 0.8),
+                        transparent: true, opacity: 0.7
+                    })
+                );
+                star.position.set(
+                    (Math.random() - 0.5) * 0.8,
+                    0.45 + Math.random() * 0.4,
+                    (Math.random() - 0.5) * 0.5
+                );
+                star.userData.baseY = star.position.y;
+                star.userData.driftSpeed = 0.3 + Math.random() * 0.5;
+                star.userData.driftRange = 0.02 + Math.random() * 0.03;
+                starParticles.add(star);
+            }
+            group.add(starParticles);
+            group.userData.starParticles = starParticles;
+
+            // Tiny crescent moon
+            const moonGeo = new THREE.SphereGeometry(0.04, 16, 16);
+            const moonMat = new THREE.MeshBasicMaterial({ color: 0xffffcc });
+            const moon = new THREE.Mesh(moonGeo, moonMat);
+            moon.position.set(0.15, 0.75, -0.1);
+            group.add(moon);
+
+            // Moon shadow (crescent effect)
+            const moonShadow = new THREE.Mesh(
+                new THREE.SphereGeometry(0.038, 16, 16),
+                new THREE.MeshBasicMaterial({ color: 0x111118 })
+            );
+            moonShadow.position.set(0.165, 0.76, -0.095);
+            group.add(moonShadow);
+
+            const moonLight = new THREE.PointLight(0xffffaa, 0.3, 1);
+            moonLight.position.copy(moon.position);
+            group.add(moonLight);
+
+            // Bed legs
+            [[-0.23, -0.3], [0.23, -0.3], [-0.23, 0.3], [0.23, 0.3]].forEach(([x, z]) => {
+                const leg = cyl(0.015, 0.015, 0.06, 0x332211);
+                leg.position.set(x, 0.065, z);
+                group.add(leg);
+            });
+
+            // Text
+            const label = createTextSprite('Antes de dormir 🌙', 36, '#aabbff');
+            label.position.set(0, 1.0, 0);
+            group.add(label);
+
+            return group;
+        }
+
+        // ===================== PLACE MICRO-SCENES =====================
+        const scenes = [];
+        const scenePositions = [
+            { pos: new THREE.Vector3(-2.8, 1.4, -0.5), rot: 0.15 },   // top-left
+            { pos: new THREE.Vector3(2.8, 1.2, -0.3), rot: -0.1 },    // top-right
+            { pos: new THREE.Vector3(-2.6, -1.4, 0.2), rot: 0.1 },    // bottom-left
+            { pos: new THREE.Vector3(2.7, -1.5, 0), rot: -0.12 }      // bottom-right
+        ];
+
+        const scene1 = createBusStopScene();
+        scene1.position.copy(scenePositions[0].pos);
+        scene1.rotation.y = scenePositions[0].rot;
+        scene1.scale.setScalar(0.85);
+        scene.add(scene1);
+        scenes.push({ group: scene1, config: scenePositions[0] });
+
+        const scene2 = createCoffeeScene();
+        scene2.position.copy(scenePositions[1].pos);
+        scene2.rotation.y = scenePositions[1].rot;
+        scene2.scale.setScalar(0.85);
+        scene.add(scene2);
+        scenes.push({ group: scene2, config: scenePositions[1] });
+
+        const scene3 = createCouchScene();
+        scene3.position.copy(scenePositions[2].pos);
+        scene3.rotation.y = scenePositions[2].rot;
+        scene3.scale.setScalar(0.85);
+        scene.add(scene3);
+        scenes.push({ group: scene3, config: scenePositions[2] });
+
+        const scene4 = createBedScene();
+        scene4.position.copy(scenePositions[3].pos);
+        scene4.rotation.y = scenePositions[3].rot;
+        scene4.scale.setScalar(0.85);
+        scene.add(scene4);
+        scenes.push({ group: scene4, config: scenePositions[3] });
+
+        // ===================== CONNECTION LINES =====================
+        function createConnectionLine(start, end) {
+            const mid = new THREE.Vector3().lerpVectors(start, end, 0.5);
+            mid.y += 0.3;
+            mid.z -= 0.5;
+
+            const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+            const points = curve.getPoints(40);
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+            const material = new THREE.LineBasicMaterial({
+                color: 0x2159E2,
+                transparent: true,
+                opacity: 0.25,
+                depthWrite: false
+            });
+
+            return new THREE.Line(geometry, material);
+        }
+
+        const phoneCenter = new THREE.Vector3(0, 0, 0);
+        scenes.forEach(s => {
+            const line = createConnectionLine(phoneCenter, s.group.position);
+            scene.add(line);
+        });
+
+        // Glowing dots along connections
+        function createGlowDots(start, end, count = 5) {
+            const mid = new THREE.Vector3().lerpVectors(start, end, 0.5);
+            mid.y += 0.3;
+            mid.z -= 0.5;
+            const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+            const dots = [];
+            for (let i = 0; i < count; i++) {
+                const dot = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.015, 8, 8),
+                    new THREE.MeshBasicMaterial({ color: 0x4488ff, transparent: true, opacity: 0.6 })
+                );
+                dot.userData.curve = curve;
+                dot.userData.offset = i / count;
+                dot.userData.speed = 0.15;
+                scene.add(dot);
+                dots.push(dot);
+            }
+            return dots;
+        }
+
+        const allDots = [];
+        scenes.forEach(s => {
+            const dots = createGlowDots(phoneCenter, s.group.position, 4);
+            allDots.push(...dots);
+        });
+
+        // ===================== ANIMATION =====================
+        let time = 0;
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            time += delta;
+
+            // Phone floating
+            phone.position.y = Math.sin(time * 0.8) * 0.08;
+            phone.rotation.y = THREE.MathUtils.degToRad(8) + Math.sin(time * 0.3) * 0.02;
+
+            // Micro-scenes gentle floating
+            scenes.forEach((s, i) => {
+                const baseY = scenePositions[i].pos.y;
+                s.group.position.y = baseY + Math.sin(time * 0.6 + i * 1.5) * 0.06;
+                s.group.rotation.y = scenePositions[i].rot + Math.sin(time * 0.4 + i) * 0.03;
+            });
+
+            // Animate coffee steam/holo notes
+            if (scene2.userData.steamGroup) {
+                scene2.userData.steamGroup.children.forEach((note, i) => {
+                    const t = time * note.userData.speed;
+                    note.position.y = note.userData.baseY + Math.sin(t + i) * 0.03 + (time * 0.02 % 0.3);
+                    const a = note.userData.angle + time * 0.3 * note.userData.speed;
+                    note.position.x = Math.cos(a) * note.userData.radius;
+                    note.position.z = Math.sin(a) * note.userData.radius;
+                    note.rotation.y = a;
+                    note.material.opacity = 0.3 + Math.sin(t * 2 + i) * 0.2;
+                });
+            }
+
+            // Animate couch holo
+            if (scene3.userData.holoGroup) {
+                scene3.userData.holoGroup.children.forEach((child, i) => {
+                    child.material.opacity = (i === 0 ? 0.2 : 0.4) + Math.sin(time * 2 + i * 0.5) * 0.15;
+                });
+            }
+
+            // Animate bed stars
+            if (scene4.userData.starParticles) {
+                scene4.userData.starParticles.children.forEach((star) => {
+                    star.position.y = star.userData.baseY + Math.sin(time * star.userData.driftSpeed) * star.userData.driftRange;
+                    star.material.opacity = 0.4 + Math.sin(time * star.userData.driftSpeed * 2) * 0.3;
+                });
+            }
+
+            // Animate glowing dots along connection lines
+            allDots.forEach(dot => {
+                const t = ((dot.userData.offset + time * dot.userData.speed) % 1);
+                const point = dot.userData.curve.getPoint(t);
+                dot.position.copy(point);
+                dot.material.opacity = 0.3 + Math.sin(t * Math.PI) * 0.5;
+                const scale = 0.6 + Math.sin(t * Math.PI) * 0.4;
+                dot.scale.setScalar(scale);
+            });
+
+            // Dust particles
+            dustMat.uniforms.time.value = time;
+
+            // Star twinkling
+            starsMat.opacity = 0.5 + Math.sin(time * 1.5) * 0.15;
+
+            // Back glow pulse
+            backGlow.intensity = 2 + Math.sin(time * 0.5) * 0.5;
+            purpleGlow.intensity = 1.5 + Math.cos(time * 0.7) * 0.3;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
