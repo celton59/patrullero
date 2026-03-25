@@ -64,6 +64,9 @@ import '../styles/global.css';
       }
     }
     </script>
+    <!-- GSAP + ScrollTrigger -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
     <style>
       /* Anti-flicker: hide body until fonts + styles are ready */
@@ -615,69 +618,79 @@ import '../styles/global.css';
         </div>
       </section>
 
-      <!-- ============ STUDY ANYWHERE — 3D iPhone ============ -->
-      <section id="study-anywhere" class="py-16 lg:py-24 relative overflow-hidden">
+      <!-- ============ STUDY ANYWHERE — 3D iPhone + Scroll Pin ============ -->
+      <section id="study-anywhere" class="relative overflow-hidden">
         <!-- Background glow -->
         <div class="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-[#2159E2]/8 rounded-full blur-[120px] pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-            <!-- Left: 3D iPhone -->
-            <div class="relative animate-on-scroll order-2 lg:order-1">
-              <div id="iphone-3d-container" style="width:100%; height:500px; max-height:60vh;"></div>
+          <div class="grid lg:grid-cols-2 gap-0 items-start min-h-screen">
+            <!-- Left: 3D iPhone (pinned) -->
+            <div id="iphone-pin-wrapper" class="relative flex items-center justify-center">
+              <div id="iphone-3d-container" style="width:100%; height:100vh;"></div>
             </div>
 
-            <!-- Right: Copy + bullets -->
-            <div class="order-1 lg:order-2">
-              <div class="animate-on-scroll">
+            <!-- Right: Scroll content — headline + cards stack -->
+            <div id="scroll-cards" class="py-[30vh] lg:py-[40vh] space-y-[40vh]">
+              <!-- Headline (appears first) -->
+              <div class="scroll-card" data-card="0">
                 <div class="inline-flex items-center gap-2 px-4 py-2 border-0 rounded-full bg-[#2159E2]/10 mb-6">
                   <span class="text-xs font-semibold text-[#2159E2] uppercase tracking-widest">Estudia donde quieras</span>
                 </div>
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white mb-4">
                   Aprovecha <span class="bg-gradient-to-r from-[#2159E2] to-[#5A2177] bg-clip-text text-transparent">cada minuto</span>
                 </h2>
-                <p class="text-slate-400 max-w-lg mb-8">Tu preparación te acompaña a todas partes. Abre la app y estudia cuando quieras, donde quieras.</p>
+                <p class="text-lg text-slate-400 max-w-lg">Tu preparación te acompaña a todas partes. Abre la app y estudia cuando quieras, donde quieras.</p>
               </div>
 
-              <div class="space-y-5">
-                <!-- Bullet 1 -->
-                <div class="flex items-center gap-4 animate-on-scroll">
-                  <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
-                    <span class="text-xl">🚌</span>
+              <!-- Card 1: Bus -->
+              <div class="scroll-card opacity-0 translate-y-8" data-card="1">
+                <div class="flex items-start gap-5 bg-slate-900/40 backdrop-blur-sm border border-slate-800/50 rounded-2xl p-6 max-w-md">
+                  <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                    <span class="text-2xl">🚌</span>
                   </div>
                   <div>
-                    <h3 class="text-sm font-bold text-white">En el bus de camino al trabajo</h3>
-                    <p class="text-xs text-slate-500">20 preguntas en 10 minutos de trayecto</p>
+                    <h3 class="text-base font-bold text-white mb-1">En el bus de camino al trabajo</h3>
+                    <p class="text-sm text-slate-400">20 preguntas en 10 minutos de trayecto. Ni te enteras y llevas 1 tema repasado.</p>
                   </div>
                 </div>
-                <!-- Bullet 2 -->
-                <div class="flex items-center gap-4 animate-on-scroll">
-                  <div class="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-                    <span class="text-xl">☕</span>
+              </div>
+
+              <!-- Card 2: Coffee -->
+              <div class="scroll-card opacity-0 translate-y-8" data-card="2">
+                <div class="flex items-start gap-5 bg-slate-900/40 backdrop-blur-sm border border-slate-800/50 rounded-2xl p-6 max-w-md">
+                  <div class="w-14 h-14 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
+                    <span class="text-2xl">☕</span>
                   </div>
                   <div>
-                    <h3 class="text-sm font-bold text-white">5 minutos con el café</h3>
-                    <p class="text-xs text-slate-500">Flashcards rápidas mientras desayunas</p>
+                    <h3 class="text-base font-bold text-white mb-1">5 minutos con el café</h3>
+                    <p class="text-sm text-slate-400">Flashcards rápidas mientras desayunas. El método perfecto para fijar conceptos.</p>
                   </div>
                 </div>
-                <!-- Bullet 3 -->
-                <div class="flex items-center gap-4 animate-on-scroll">
-                  <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0">
-                    <span class="text-xl">🛋️</span>
+              </div>
+
+              <!-- Card 3: Couch -->
+              <div class="scroll-card opacity-0 translate-y-8" data-card="3">
+                <div class="flex items-start gap-5 bg-slate-900/40 backdrop-blur-sm border border-slate-800/50 rounded-2xl p-6 max-w-md">
+                  <div class="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0">
+                    <span class="text-2xl">🛋️</span>
                   </div>
                   <div>
-                    <h3 class="text-sm font-bold text-white">En el sofá después de comer</h3>
-                    <p class="text-xs text-slate-500">Repasa el tema del día sin agobios</p>
+                    <h3 class="text-base font-bold text-white mb-1">En el sofá después de comer</h3>
+                    <p class="text-sm text-slate-400">Repasa el tema del día sin agobios. Tests cortos, sin presión.</p>
                   </div>
                 </div>
-                <!-- Bullet 4 -->
-                <div class="flex items-center gap-4 animate-on-scroll">
-                  <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
-                    <span class="text-xl">🌙</span>
+              </div>
+
+              <!-- Card 4: Night -->
+              <div class="scroll-card opacity-0 translate-y-8" data-card="4">
+                <div class="flex items-start gap-5 bg-slate-900/40 backdrop-blur-sm border border-slate-800/50 rounded-2xl p-6 max-w-md">
+                  <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                    <span class="text-2xl">🌙</span>
                   </div>
                   <div>
-                    <h3 class="text-sm font-bold text-white">Antes de dormir</h3>
-                    <p class="text-xs text-slate-500">5 minutos de repaso = retención del 96%</p>
+                    <h3 class="text-base font-bold text-white mb-1">Antes de dormir</h3>
+                    <p class="text-sm text-slate-400">5 minutos de repaso antes de cerrar los ojos. La ciencia dice: retención del 96%.</p>
                   </div>
                 </div>
               </div>
@@ -1685,15 +1698,15 @@ import '../styles/global.css';
       setTimeout(reveal, 300);
     </script>
 
-    <!-- ============ 3D iPhone Script ============ -->
+    <!-- ============ 3D iPhone + GSAP ScrollTrigger ============ -->
     <script type="module">
       import * as THREE from 'three';
       import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
       const container = document.getElementById('iphone-3d-container');
       if (container) {
+        // ---- Three.js Setup ----
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(30, container.clientWidth / container.clientHeight, 0.001, 10);
         camera.position.set(0, 0, 0.45);
@@ -1706,7 +1719,7 @@ import '../styles/global.css';
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         container.appendChild(renderer.domElement);
 
-        // Environment map — realistic studio reflections
+        // Environment map
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
         scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
         pmremGenerator.dispose();
@@ -1720,54 +1733,35 @@ import '../styles/global.css';
         fill.position.set(-3, 1, -2);
         scene.add(fill);
 
-        // OrbitControls — auto rotate, no user zoom
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 1.5;
-        controls.enableZoom = false;
-        controls.enablePan = false;
-        controls.minPolarAngle = Math.PI * 0.35;
-        controls.maxPolarAngle = Math.PI * 0.65;
+        // State object that GSAP will tween
+        const phoneState = { rotY: -0.35, rotX: 0.14, posY: 0 };
 
-        // Load model — no material overrides, keep original look
+        // Load model
+        let model = null;
         const loader = new GLTFLoader();
         loader.load('/iphone-17-pro.glb', (gltf) => {
-          const model = gltf.scene;
-
-          // Center
+          model = gltf.scene;
           const box = new THREE.Box3().setFromObject(model);
-          const center = box.getCenter(new THREE.Vector3());
-          model.position.sub(center);
-
-          // Tilt slightly
-          model.rotation.x = THREE.MathUtils.degToRad(8);
-
+          model.position.sub(box.getCenter(new THREE.Vector3()));
+          model.rotation.x = phoneState.rotX;
+          model.rotation.y = phoneState.rotY;
           scene.add(model);
+
+          // ---- GSAP ScrollTrigger (after model loaded) ----
+          initScrollAnimation();
         });
 
-        // Animate
+        // Render loop
         const clock = new THREE.Clock();
         function animate() {
           requestAnimationFrame(animate);
           const t = clock.getElapsedTime();
-
-          // Float up/down
-          scene.children.forEach(c => {
-            if (c.isGroup || c.isObject3D) {
-              // only float the model, not lights
-            }
-          });
-          if (scene.children.length > 4) {
-            // Model is the last child added
-            const model = scene.children[scene.children.length - 1];
-            if (model.isGroup || model.isObject3D) {
-              model.position.y = -0.0 + Math.sin(t * 0.8) * 0.005;
-            }
+          if (model) {
+            model.rotation.y = phoneState.rotY;
+            model.rotation.x = phoneState.rotX;
+            // Gentle float
+            model.position.y = phoneState.posY + Math.sin(t * 0.8) * 0.003;
           }
-
-          controls.update();
           renderer.render(scene, camera);
         }
         animate();
@@ -1780,6 +1774,53 @@ import '../styles/global.css';
           camera.updateProjectionMatrix();
           renderer.setSize(w, h);
         }).observe(container);
+
+        // ---- GSAP ScrollTrigger ----
+        function initScrollAnimation() {
+          gsap.registerPlugin(ScrollTrigger);
+
+          const section = document.getElementById('study-anywhere');
+          const cards = gsap.utils.toArray('.scroll-card');
+
+          // Pin the iPhone column while scrolling through cards
+          ScrollTrigger.create({
+            trigger: section,
+            start: 'top top',
+            end: 'bottom bottom',
+            pin: '#iphone-pin-wrapper',
+            pinSpacing: false,
+          });
+
+          // Rotate phone as user scrolls through the section
+          gsap.to(phoneState, {
+            rotY: Math.PI * 2 - 0.35,  // full 360° rotation
+            rotX: 0.0,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top top',
+              end: 'bottom bottom',
+              scrub: 1,
+            }
+          });
+
+          // Animate each card in
+          cards.forEach((card, i) => {
+            if (i === 0) return; // headline is already visible
+            gsap.to(card, {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: card,
+                start: 'top 80%',
+                end: 'top 50%',
+                scrub: 1,
+              }
+            });
+          });
+        }
       }
     </script>
 
