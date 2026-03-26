@@ -315,6 +315,18 @@ import '../styles/global.css';
         transform: translateY(-4px);
         box-shadow: 0 12px 30px rgba(0,0,0,0.3);
       }
+      .unit-emblem {
+        width: 64px;
+        height: 64px;
+        object-fit: contain;
+        margin-bottom: 0.75rem;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+        transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+      }
+      .unit-card:hover .unit-emblem {
+        transform: scale(1.12);
+        filter: drop-shadow(0 4px 16px rgba(33,89,226,0.3));
+      }
       .unit-icon {
         width: 56px;
         height: 56px;
@@ -959,203 +971,129 @@ import '../styles/global.css';
           <div class="units-marquee-track">
             <!-- Set 1 -->
             <div class="units-marquee-set">
-
               <div class="unit-card group">
-                <div class="unit-icon bg-red-500/10 border-red-500/20 group-hover:border-red-400/40 group-hover:bg-red-500/20">
-                  <span class="text-2xl">🎯</span>
-                </div>
+                <img src="/units/geo.png" alt="GEO" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">GEO</div>
                 <div class="unit-desc">Grupo Especial de Operaciones</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-blue-500/10 border-blue-500/20 group-hover:border-blue-400/40 group-hover:bg-blue-500/20">
-                  <span class="text-2xl">🛡️</span>
-                </div>
+                <img src="/units/uip.png" alt="UIP" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">UIP</div>
                 <div class="unit-desc">Unidades de Intervención Policial</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-amber-500/10 border-amber-500/20 group-hover:border-amber-400/40 group-hover:bg-amber-500/20">
-                  <span class="text-2xl">💣</span>
-                </div>
+                <img src="/units/tedax.png" alt="TEDAX" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">TEDAX</div>
                 <div class="unit-desc">Desactivación de Explosivos</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-purple-500/10 border-purple-500/20 group-hover:border-purple-400/40 group-hover:bg-purple-500/20">
-                  <span class="text-2xl">🔬</span>
-                </div>
+                <img src="/units/cientifica.png" alt="Científica" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Científica</div>
                 <div class="unit-desc">Policía Científica</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-emerald-500/10 border-emerald-500/20 group-hover:border-emerald-400/40 group-hover:bg-emerald-500/20">
-                  <span class="text-2xl">⚖️</span>
-                </div>
+                <img src="/units/judicial.png" alt="Judicial" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Judicial</div>
                 <div class="unit-desc">Policía Judicial</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-cyan-500/10 border-cyan-500/20 group-hover:border-cyan-400/40 group-hover:bg-cyan-500/20">
-                  <span class="text-2xl">🕵️</span>
-                </div>
+                <img src="/units/informacion.png" alt="Información" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Información</div>
-                <div class="unit-desc">Comisaría General de Información</div>
+                <div class="unit-desc">Comisaría Gral. de Información</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-orange-500/10 border-orange-500/20 group-hover:border-orange-400/40 group-hover:bg-orange-500/20">
-                  <span class="text-2xl">🐕</span>
-                </div>
+                <img src="/units/caninos.png" alt="Guías Caninos" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Guías Caninos</div>
                 <div class="unit-desc">Unidad de Guías Caninos</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-rose-500/10 border-rose-500/20 group-hover:border-rose-400/40 group-hover:bg-rose-500/20">
-                  <span class="text-2xl">💊</span>
-                </div>
+                <img src="/units/udyco.png" alt="UDYCO" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">UDYCO</div>
                 <div class="unit-desc">Drogas y Crimen Organizado</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-yellow-500/10 border-yellow-500/20 group-hover:border-yellow-400/40 group-hover:bg-yellow-500/20">
-                  <span class="text-2xl">🐴</span>
-                </div>
+                <img src="/units/caballeria.png" alt="Caballería" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Caballería</div>
                 <div class="unit-desc">Unidad de Caballería</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-indigo-500/10 border-indigo-500/20 group-hover:border-indigo-400/40 group-hover:bg-indigo-500/20">
-                  <span class="text-2xl">🌐</span>
-                </div>
+                <img src="/units/uit.png" alt="UIT" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">UIT</div>
                 <div class="unit-desc">Investigación Tecnológica</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-teal-500/10 border-teal-500/20 group-hover:border-teal-400/40 group-hover:bg-teal-500/20">
-                  <span class="text-2xl">🚔</span>
-                </div>
+                <img src="/units/upr.png" alt="UPR" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">UPR</div>
                 <div class="unit-desc">Prevención y Reacción</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-sky-500/10 border-sky-500/20 group-hover:border-sky-400/40 group-hover:bg-sky-500/20">
-                  <span class="text-2xl">✈️</span>
-                </div>
+                <img src="/units/fronteras.png" alt="Fronteras" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Fronteras</div>
-                <div class="unit-desc">Control de Fronteras</div>
+                <div class="unit-desc">Extranjería y Fronteras</div>
               </div>
-
             </div>
             <!-- Set 2 (duplicate for seamless loop) -->
             <div class="units-marquee-set" aria-hidden="true">
-
               <div class="unit-card group">
-                <div class="unit-icon bg-red-500/10 border-red-500/20 group-hover:border-red-400/40 group-hover:bg-red-500/20">
-                  <span class="text-2xl">🎯</span>
-                </div>
+                <img src="/units/geo.png" alt="GEO" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">GEO</div>
                 <div class="unit-desc">Grupo Especial de Operaciones</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-blue-500/10 border-blue-500/20 group-hover:border-blue-400/40 group-hover:bg-blue-500/20">
-                  <span class="text-2xl">🛡️</span>
-                </div>
+                <img src="/units/uip.png" alt="UIP" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">UIP</div>
                 <div class="unit-desc">Unidades de Intervención Policial</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-amber-500/10 border-amber-500/20 group-hover:border-amber-400/40 group-hover:bg-amber-500/20">
-                  <span class="text-2xl">💣</span>
-                </div>
+                <img src="/units/tedax.png" alt="TEDAX" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">TEDAX</div>
                 <div class="unit-desc">Desactivación de Explosivos</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-purple-500/10 border-purple-500/20 group-hover:border-purple-400/40 group-hover:bg-purple-500/20">
-                  <span class="text-2xl">🔬</span>
-                </div>
+                <img src="/units/cientifica.png" alt="Científica" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Científica</div>
                 <div class="unit-desc">Policía Científica</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-emerald-500/10 border-emerald-500/20 group-hover:border-emerald-400/40 group-hover:bg-emerald-500/20">
-                  <span class="text-2xl">⚖️</span>
-                </div>
+                <img src="/units/judicial.png" alt="Judicial" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Judicial</div>
                 <div class="unit-desc">Policía Judicial</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-cyan-500/10 border-cyan-500/20 group-hover:border-cyan-400/40 group-hover:bg-cyan-500/20">
-                  <span class="text-2xl">🕵️</span>
-                </div>
+                <img src="/units/informacion.png" alt="Información" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Información</div>
-                <div class="unit-desc">Comisaría General de Información</div>
+                <div class="unit-desc">Comisaría Gral. de Información</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-orange-500/10 border-orange-500/20 group-hover:border-orange-400/40 group-hover:bg-orange-500/20">
-                  <span class="text-2xl">🐕</span>
-                </div>
+                <img src="/units/caninos.png" alt="Guías Caninos" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Guías Caninos</div>
                 <div class="unit-desc">Unidad de Guías Caninos</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-rose-500/10 border-rose-500/20 group-hover:border-rose-400/40 group-hover:bg-rose-500/20">
-                  <span class="text-2xl">💊</span>
-                </div>
+                <img src="/units/udyco.png" alt="UDYCO" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">UDYCO</div>
                 <div class="unit-desc">Drogas y Crimen Organizado</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-yellow-500/10 border-yellow-500/20 group-hover:border-yellow-400/40 group-hover:bg-yellow-500/20">
-                  <span class="text-2xl">🐴</span>
-                </div>
+                <img src="/units/caballeria.png" alt="Caballería" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Caballería</div>
                 <div class="unit-desc">Unidad de Caballería</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-indigo-500/10 border-indigo-500/20 group-hover:border-indigo-400/40 group-hover:bg-indigo-500/20">
-                  <span class="text-2xl">🌐</span>
-                </div>
+                <img src="/units/uit.png" alt="UIT" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">UIT</div>
                 <div class="unit-desc">Investigación Tecnológica</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-teal-500/10 border-teal-500/20 group-hover:border-teal-400/40 group-hover:bg-teal-500/20">
-                  <span class="text-2xl">🚔</span>
-                </div>
+                <img src="/units/upr.png" alt="UPR" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">UPR</div>
                 <div class="unit-desc">Prevención y Reacción</div>
               </div>
-
               <div class="unit-card group">
-                <div class="unit-icon bg-sky-500/10 border-sky-500/20 group-hover:border-sky-400/40 group-hover:bg-sky-500/20">
-                  <span class="text-2xl">✈️</span>
-                </div>
+                <img src="/units/fronteras.png" alt="Fronteras" class="unit-emblem" loading="lazy" />
                 <div class="unit-name">Fronteras</div>
-                <div class="unit-desc">Control de Fronteras</div>
+                <div class="unit-desc">Extranjería y Fronteras</div>
               </div>
-
             </div>
           </div>
         </div>
