@@ -355,6 +355,30 @@ import '../styles/global.css';
         text-overflow: ellipsis;
       }
 
+      /* ===== VOTING ===== */
+      .unit-votes {
+        margin-top: 0.5rem;
+        font-size: 0.6rem;
+        color: rgba(148,163,184,0.6);
+        font-weight: 700;
+        text-align: center;
+        min-height: 1rem;
+        transition: all 0.3s ease;
+      }
+      .unit-card.voted {
+        border-color: rgba(33,89,226,0.4) !important;
+        box-shadow: 0 0 20px rgba(33,89,226,0.15);
+      }
+      .unit-card.voted .unit-votes {
+        color: rgba(33,89,226,0.9);
+      }
+      @keyframes vote-pop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+        100% { transform: scale(1); }
+      }
+      .vote-pop { animation: vote-pop 0.4s cubic-bezier(0.22,1,0.36,1); }
+
       /* ===== MATRIX SECTION ===== */
       .bg-radial-vignette {
         background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
@@ -822,7 +846,7 @@ import '../styles/global.css';
         </div>
       </section>
 
-      <!-- ============ MATRIX CHOICE — Escala Básica vs Ejecutiva ============ -->
+      <!-- ============ MATRIX CHOICE — Escala Básica vs Ejecutiva (VOTABLE) ============ -->
       <section id="elige-escala" class="relative py-10 lg:py-14 overflow-hidden">
         <!-- Matrix rain background -->
         <div class="matrix-rain-container absolute inset-0 pointer-events-none overflow-hidden">
@@ -832,15 +856,16 @@ import '../styles/global.css';
 
         <!-- Content -->
         <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-white mb-8 animate-on-scroll matrix-text-glow">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-white mb-2 animate-on-scroll matrix-text-glow">
             Elige tu <span class="text-green-400">escala</span>
           </h2>
+          <p class="text-xs text-slate-500 mb-8 animate-on-scroll">¿Cuál es tu oposición? Vota y mira qué eligen los demás</p>
 
-          <!-- Pills — compact side by side -->
+          <!-- Pills — votable -->
           <div class="grid grid-cols-2 gap-3 sm:gap-5 max-w-2xl mx-auto">
 
             <!-- BLUE PILL — Escala Básica -->
-            <a href="/registro?escala=basica" class="group animate-on-scroll">
+            <button id="vote-basica" class="group animate-on-scroll text-left vote-pill" data-vote="basica">
               <div class="relative bg-gradient-to-br from-[#0a1628] to-[#0d1f3c] border-2 border-blue-500/30 rounded-2xl p-5 sm:p-6 transition-all duration-500 hover:border-blue-400/60 hover:shadow-[0_0_40px_rgba(59,130,246,0.25)] cursor-pointer overflow-hidden">
                 <div class="absolute -top-8 -right-8 w-24 h-24 bg-blue-500/15 rounded-full blur-[40px] group-hover:bg-blue-400/25 transition-all duration-500"></div>
                 <!-- Pill icon -->
@@ -849,16 +874,30 @@ import '../styles/global.css';
                     <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-300/20 border border-blue-200/20"></div>
                   </div>
                 </div>
-                <h3 class="text-base sm:text-lg font-black text-white uppercase tracking-wider mb-1 group-hover:text-blue-300 transition-colors">Escala Básica</h3>
-                <p class="text-xs text-blue-300/50 font-mono mb-3">Policía Nacional</p>
-                <div class="py-2 px-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-xs font-bold text-blue-400 uppercase tracking-wider group-hover:bg-blue-500/20 transition-all">
-                  Empezar →
+                <h3 class="text-base sm:text-lg font-black text-white uppercase tracking-wider mb-1 group-hover:text-blue-300 transition-colors text-center">Escala Básica</h3>
+                <p class="text-xs text-blue-300/50 font-mono mb-3 text-center">Policía Nacional</p>
+                <!-- Vote count + bar -->
+                <div class="vote-result hidden">
+                  <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden mb-2">
+                    <div id="bar-basica" class="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-1000 ease-out" style="width:0%"></div>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span id="count-basica" class="text-sm font-bold text-blue-400">0</span>
+                    <span id="pct-basica" class="text-[10px] text-slate-500 font-mono">0%</span>
+                  </div>
+                </div>
+                <div class="vote-cta py-2 px-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-xs font-bold text-blue-400 uppercase tracking-wider group-hover:bg-blue-500/20 transition-all text-center">
+                  Votar 🗳️
+                </div>
+                <!-- Voted check -->
+                <div class="vote-check hidden py-2 px-4 bg-blue-500/20 border border-blue-400/30 rounded-lg text-xs font-bold text-blue-300 uppercase tracking-wider text-center">
+                  ✓ Tu voto
                 </div>
               </div>
-            </a>
+            </button>
 
             <!-- RED PILL — Escala Ejecutiva -->
-            <a href="/registro?escala=ejecutiva" class="group animate-on-scroll">
+            <button id="vote-ejecutiva" class="group animate-on-scroll text-left vote-pill" data-vote="ejecutiva">
               <div class="relative bg-gradient-to-br from-[#1a0a0a] to-[#2d0f0f] border-2 border-red-500/30 rounded-2xl p-5 sm:p-6 transition-all duration-500 hover:border-red-400/60 hover:shadow-[0_0_40px_rgba(239,68,68,0.25)] cursor-pointer overflow-hidden">
                 <div class="absolute -top-8 -left-8 w-24 h-24 bg-red-500/15 rounded-full blur-[40px] group-hover:bg-red-400/25 transition-all duration-500"></div>
                 <!-- Pill icon -->
@@ -867,21 +906,33 @@ import '../styles/global.css';
                     <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-300/20 border border-red-200/20"></div>
                   </div>
                 </div>
-                <h3 class="text-base sm:text-lg font-black text-white uppercase tracking-wider mb-1 group-hover:text-red-300 transition-colors">Escala Ejecutiva</h3>
-                <p class="text-xs text-red-300/50 font-mono mb-3">Inspector / Subinspector</p>
-                <div class="py-2 px-4 bg-red-500/10 border border-red-500/20 rounded-lg text-xs font-bold text-red-400 uppercase tracking-wider group-hover:bg-red-500/20 transition-all">
-                  Empezar →
+                <h3 class="text-base sm:text-lg font-black text-white uppercase tracking-wider mb-1 group-hover:text-red-300 transition-colors text-center">Escala Ejecutiva</h3>
+                <p class="text-xs text-red-300/50 font-mono mb-3 text-center">Inspector / Subinspector</p>
+                <!-- Vote count + bar -->
+                <div class="vote-result hidden">
+                  <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden mb-2">
+                    <div id="bar-ejecutiva" class="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all duration-1000 ease-out" style="width:0%"></div>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span id="count-ejecutiva" class="text-sm font-bold text-red-400">0</span>
+                    <span id="pct-ejecutiva" class="text-[10px] text-slate-500 font-mono">0%</span>
+                  </div>
+                </div>
+                <div class="vote-cta py-2 px-4 bg-red-500/10 border border-red-500/20 rounded-lg text-xs font-bold text-red-400 uppercase tracking-wider group-hover:bg-red-500/20 transition-all text-center">
+                  Votar 🗳️
+                </div>
+                <div class="vote-check hidden py-2 px-4 bg-red-500/20 border border-red-400/30 rounded-lg text-xs font-bold text-red-300 uppercase tracking-wider text-center">
+                  ✓ Tu voto
                 </div>
               </div>
-            </a>
+            </button>
 
           </div>
         </div>
       </section>
 
-      <!-- ============ UNIDADES CNP — SLIDER ============ -->
+      <!-- ============ UNIDADES CNP — SLIDER (VOTABLE) ============ -->
       <section class="py-14 lg:py-20 relative overflow-hidden border-t border-slate-800/50">
-        <!-- Subtle background -->
         <div class="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-transparent to-transparent pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mb-10">
@@ -894,143 +945,46 @@ import '../styles/global.css';
               REVOPOL es el <span class="bg-gradient-to-r from-[#2159E2] to-[#5A2177] bg-clip-text text-transparent">primer paso</span>
             </h2>
             <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto">
-              El siguiente es elegir unidad. Prepárate para la que más te motive.
+              El siguiente es elegir unidad. <span class="text-slate-300">¿Cuál es la tuya? Vota 🗳️</span>
             </p>
           </div>
         </div>
 
         <!-- Marquee de unidades -->
         <div class="relative">
-          <!-- Fade edges -->
           <div class="absolute left-0 top-0 bottom-0 w-24 lg:w-40 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10 pointer-events-none"></div>
           <div class="absolute right-0 top-0 bottom-0 w-24 lg:w-40 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10 pointer-events-none"></div>
 
-          <div class="units-marquee-track">
+          <div class="units-marquee-track" id="units-marquee">
             <!-- Set 1 -->
             <div class="units-marquee-set">
-              <div class="unit-card group">
-                <img src="/units/geo.png" alt="GEO" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">GEO</div>
-                <div class="unit-desc">Grupo Especial de Operaciones</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/uip.png" alt="UIP" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">UIP</div>
-                <div class="unit-desc">Unidades de Intervención Policial</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/tedax.png" alt="TEDAX" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">TEDAX</div>
-                <div class="unit-desc">Desactivación de Explosivos</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/cientifica.png" alt="Científica" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Científica</div>
-                <div class="unit-desc">Policía Científica</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/judicial.png" alt="Judicial" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Judicial</div>
-                <div class="unit-desc">Policía Judicial</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/informacion.png" alt="Información" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Información</div>
-                <div class="unit-desc">Comisaría Gral. de Información</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/caninos.png" alt="Guías Caninos" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Guías Caninos</div>
-                <div class="unit-desc">Unidad de Guías Caninos</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/udyco.png" alt="UDYCO" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">UDYCO</div>
-                <div class="unit-desc">Drogas y Crimen Organizado</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/caballeria.png" alt="Caballería" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Caballería</div>
-                <div class="unit-desc">Unidad de Caballería</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/uit.png" alt="GRECO" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">GRECO</div>
-                <div class="unit-desc">Crimen Organizado</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/upr.png" alt="UPR" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">UPR</div>
-                <div class="unit-desc">Prevención y Reacción</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/fronteras.png" alt="Fronteras" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Fronteras</div>
-                <div class="unit-desc">Extranjería y Fronteras</div>
-              </div>
+              <button class="unit-card group" data-unit="geo"><img src="/units/geo.png" alt="GEO" class="unit-emblem" loading="lazy" /><div class="unit-name">GEO</div><div class="unit-desc">Grupo Especial de Operaciones</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="uip"><img src="/units/uip.png" alt="UIP" class="unit-emblem" loading="lazy" /><div class="unit-name">UIP</div><div class="unit-desc">Unidades de Intervención Policial</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="tedax"><img src="/units/tedax.png" alt="TEDAX" class="unit-emblem" loading="lazy" /><div class="unit-name">TEDAX</div><div class="unit-desc">Desactivación de Explosivos</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="cientifica"><img src="/units/cientifica.png" alt="Científica" class="unit-emblem" loading="lazy" /><div class="unit-name">Científica</div><div class="unit-desc">Policía Científica</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="judicial"><img src="/units/judicial.png" alt="Judicial" class="unit-emblem" loading="lazy" /><div class="unit-name">Judicial</div><div class="unit-desc">Policía Judicial</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="informacion"><img src="/units/informacion.png" alt="Información" class="unit-emblem" loading="lazy" /><div class="unit-name">Información</div><div class="unit-desc">Comisaría Gral. de Información</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="caninos"><img src="/units/caninos.png" alt="Guías Caninos" class="unit-emblem" loading="lazy" /><div class="unit-name">Guías Caninos</div><div class="unit-desc">Unidad de Guías Caninos</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="udyco"><img src="/units/udyco.png" alt="UDYCO" class="unit-emblem" loading="lazy" /><div class="unit-name">UDYCO</div><div class="unit-desc">Drogas y Crimen Organizado</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="caballeria"><img src="/units/caballeria.png" alt="Caballería" class="unit-emblem" loading="lazy" /><div class="unit-name">Caballería</div><div class="unit-desc">Unidad de Caballería</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="greco"><img src="/units/uit.png" alt="GRECO" class="unit-emblem" loading="lazy" /><div class="unit-name">GRECO</div><div class="unit-desc">Crimen Organizado</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="upr"><img src="/units/upr.png" alt="UPR" class="unit-emblem" loading="lazy" /><div class="unit-name">UPR</div><div class="unit-desc">Prevención y Reacción</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="fronteras"><img src="/units/fronteras.png" alt="Fronteras" class="unit-emblem" loading="lazy" /><div class="unit-name">Fronteras</div><div class="unit-desc">Extranjería y Fronteras</div><div class="unit-votes"></div></button>
             </div>
             <!-- Set 2 (duplicate for seamless loop) -->
             <div class="units-marquee-set" aria-hidden="true">
-              <div class="unit-card group">
-                <img src="/units/geo.png" alt="GEO" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">GEO</div>
-                <div class="unit-desc">Grupo Especial de Operaciones</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/uip.png" alt="UIP" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">UIP</div>
-                <div class="unit-desc">Unidades de Intervención Policial</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/tedax.png" alt="TEDAX" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">TEDAX</div>
-                <div class="unit-desc">Desactivación de Explosivos</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/cientifica.png" alt="Científica" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Científica</div>
-                <div class="unit-desc">Policía Científica</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/judicial.png" alt="Judicial" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Judicial</div>
-                <div class="unit-desc">Policía Judicial</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/informacion.png" alt="Información" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Información</div>
-                <div class="unit-desc">Comisaría Gral. de Información</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/caninos.png" alt="Guías Caninos" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Guías Caninos</div>
-                <div class="unit-desc">Unidad de Guías Caninos</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/udyco.png" alt="UDYCO" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">UDYCO</div>
-                <div class="unit-desc">Drogas y Crimen Organizado</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/caballeria.png" alt="Caballería" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Caballería</div>
-                <div class="unit-desc">Unidad de Caballería</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/uit.png" alt="GRECO" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">GRECO</div>
-                <div class="unit-desc">Crimen Organizado</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/upr.png" alt="UPR" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">UPR</div>
-                <div class="unit-desc">Prevención y Reacción</div>
-              </div>
-              <div class="unit-card group">
-                <img src="/units/fronteras.png" alt="Fronteras" class="unit-emblem" loading="lazy" />
-                <div class="unit-name">Fronteras</div>
-                <div class="unit-desc">Extranjería y Fronteras</div>
-              </div>
+              <button class="unit-card group" data-unit="geo"><img src="/units/geo.png" alt="GEO" class="unit-emblem" loading="lazy" /><div class="unit-name">GEO</div><div class="unit-desc">Grupo Especial de Operaciones</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="uip"><img src="/units/uip.png" alt="UIP" class="unit-emblem" loading="lazy" /><div class="unit-name">UIP</div><div class="unit-desc">Unidades de Intervención Policial</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="tedax"><img src="/units/tedax.png" alt="TEDAX" class="unit-emblem" loading="lazy" /><div class="unit-name">TEDAX</div><div class="unit-desc">Desactivación de Explosivos</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="cientifica"><img src="/units/cientifica.png" alt="Científica" class="unit-emblem" loading="lazy" /><div class="unit-name">Científica</div><div class="unit-desc">Policía Científica</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="judicial"><img src="/units/judicial.png" alt="Judicial" class="unit-emblem" loading="lazy" /><div class="unit-name">Judicial</div><div class="unit-desc">Policía Judicial</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="informacion"><img src="/units/informacion.png" alt="Información" class="unit-emblem" loading="lazy" /><div class="unit-name">Información</div><div class="unit-desc">Comisaría Gral. de Información</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="caninos"><img src="/units/caninos.png" alt="Guías Caninos" class="unit-emblem" loading="lazy" /><div class="unit-name">Guías Caninos</div><div class="unit-desc">Unidad de Guías Caninos</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="udyco"><img src="/units/udyco.png" alt="UDYCO" class="unit-emblem" loading="lazy" /><div class="unit-name">UDYCO</div><div class="unit-desc">Drogas y Crimen Organizado</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="caballeria"><img src="/units/caballeria.png" alt="Caballería" class="unit-emblem" loading="lazy" /><div class="unit-name">Caballería</div><div class="unit-desc">Unidad de Caballería</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="greco"><img src="/units/uit.png" alt="GRECO" class="unit-emblem" loading="lazy" /><div class="unit-name">GRECO</div><div class="unit-desc">Crimen Organizado</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="upr"><img src="/units/upr.png" alt="UPR" class="unit-emblem" loading="lazy" /><div class="unit-name">UPR</div><div class="unit-desc">Prevención y Reacción</div><div class="unit-votes"></div></button>
+              <button class="unit-card group" data-unit="fronteras"><img src="/units/fronteras.png" alt="Fronteras" class="unit-emblem" loading="lazy" /><div class="unit-name">Fronteras</div><div class="unit-desc">Extranjería y Fronteras</div><div class="unit-votes"></div></button>
             </div>
           </div>
         </div>
@@ -2119,6 +2073,139 @@ import '../styles/global.css';
       }
       // Safety: reveal after 300ms max even if fonts are slow
       setTimeout(reveal, 300);
+    </script>
+
+    <!-- ============ VOTING SYSTEM ============ -->
+    <script>
+      (() => {
+        // Base votes (realistic starting numbers)
+        const BASE_ESCALA = { basica: 1847, ejecutiva: 623 };
+        const BASE_UNITS = {
+          geo: 412, uip: 287, tedax: 198, cientifica: 156, judicial: 231,
+          informacion: 89, caninos: 134, udyco: 178, caballeria: 67,
+          greco: 145, upr: 203, fronteras: 112
+        };
+
+        const LS_ESCALA = 'revopol_vote_escala';
+        const LS_UNIT = 'revopol_vote_unit';
+        const LS_ESCALA_COUNTS = 'revopol_escala_counts';
+        const LS_UNIT_COUNTS = 'revopol_unit_counts';
+
+        // Load or init counts
+        const getEscalaCounts = () => {
+          try { return JSON.parse(localStorage.getItem(LS_ESCALA_COUNTS)) || {...BASE_ESCALA}; }
+          catch { return {...BASE_ESCALA}; }
+        };
+        const getUnitCounts = () => {
+          try { return JSON.parse(localStorage.getItem(LS_UNIT_COUNTS)) || {...BASE_UNITS}; }
+          catch { return {...BASE_UNITS}; }
+        };
+
+        // ===== ESCALA VOTING =====
+        const userEscala = localStorage.getItem(LS_ESCALA);
+        const escalaCounts = getEscalaCounts();
+
+        const renderEscala = () => {
+          const total = escalaCounts.basica + escalaCounts.ejecutiva;
+          const pctB = Math.round((escalaCounts.basica / total) * 100);
+          const pctE = 100 - pctB;
+
+          // Show results
+          document.querySelectorAll('.vote-result').forEach(el => el.classList.remove('hidden'));
+          document.querySelectorAll('.vote-cta').forEach(el => el.classList.add('hidden'));
+
+          const barB = document.getElementById('bar-basica');
+          const barE = document.getElementById('bar-ejecutiva');
+          if (barB) setTimeout(() => barB.style.width = pctB + '%', 50);
+          if (barE) setTimeout(() => barE.style.width = pctE + '%', 50);
+
+          const cntB = document.getElementById('count-basica');
+          const cntE = document.getElementById('count-ejecutiva');
+          if (cntB) cntB.textContent = escalaCounts.basica.toLocaleString('es-ES') + ' votos';
+          if (cntE) cntE.textContent = escalaCounts.ejecutiva.toLocaleString('es-ES') + ' votos';
+
+          const pB = document.getElementById('pct-basica');
+          const pE = document.getElementById('pct-ejecutiva');
+          if (pB) pB.textContent = pctB + '%';
+          if (pE) pE.textContent = pctE + '%';
+
+          // Show check on voted option
+          if (userEscala) {
+            const btn = document.getElementById('vote-' + userEscala);
+            if (btn) {
+              btn.querySelector('.vote-check')?.classList.remove('hidden');
+            }
+          }
+        };
+
+        // If already voted, show results immediately
+        if (userEscala) renderEscala();
+
+        // Click handlers
+        document.querySelectorAll('.vote-pill').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (userEscala) return; // Already voted
+
+            const vote = btn.dataset.vote;
+            escalaCounts[vote]++;
+            localStorage.setItem(LS_ESCALA, vote);
+            localStorage.setItem(LS_ESCALA_COUNTS, JSON.stringify(escalaCounts));
+
+            btn.classList.add('vote-pop');
+            renderEscala();
+          });
+        });
+
+        // ===== UNIT VOTING =====
+        const userUnit = localStorage.getItem(LS_UNIT);
+        const unitCounts = getUnitCounts();
+
+        const renderUnits = () => {
+          const total = Object.values(unitCounts).reduce((a, b) => a + b, 0);
+          document.querySelectorAll('[data-unit]').forEach(card => {
+            const unit = card.dataset.unit;
+            const votes = unitCounts[unit] || 0;
+            const pct = Math.round((votes / total) * 100);
+            const votesEl = card.querySelector('.unit-votes');
+            if (votesEl) {
+              votesEl.textContent = votes.toLocaleString('es-ES') + ' (' + pct + '%)';
+            }
+            // Highlight voted
+            if (userUnit === unit) {
+              card.classList.add('voted');
+              if (votesEl) votesEl.textContent = '✓ ' + votesEl.textContent;
+            }
+          });
+        };
+
+        // Show vote counts always (they're small and add social proof)
+        renderUnits();
+
+        // Click handler for units
+        document.querySelectorAll('[data-unit]').forEach(card => {
+          card.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (userUnit) return; // Already voted
+
+            const unit = card.dataset.unit;
+            unitCounts[unit]++;
+            localStorage.setItem(LS_UNIT, unit);
+            localStorage.setItem(LS_UNIT_COUNTS, JSON.stringify(unitCounts));
+
+            // Pause marquee briefly
+            const track = document.getElementById('units-marquee');
+            if (track) {
+              track.style.animationPlayState = 'paused';
+              setTimeout(() => track.style.animationPlayState = 'running', 2000);
+            }
+
+            card.classList.add('vote-pop');
+            renderUnits();
+          });
+        });
+      })();
     </script>
 
     <!-- ============ MATRIX RAIN CANVAS ============ -->
