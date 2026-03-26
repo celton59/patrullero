@@ -257,6 +257,35 @@ import '../styles/global.css';
         .flashlight-btn { bottom: 88px; right: 24px; }
       }
 
+      /* ===== MATRIX SECTION ===== */
+      .bg-radial-vignette {
+        background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+      }
+      .matrix-text-glow {
+        text-shadow: 0 0 40px rgba(74,222,128,0.15);
+      }
+      @keyframes matrix-flicker {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 0.4; }
+        75% { opacity: 1; }
+      }
+      .matrix-flicker {
+        animation: matrix-flicker 3s ease-in-out infinite;
+      }
+      @keyframes matrix-flicker-slow {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.7; }
+      }
+      .matrix-flicker-slow {
+        animation: matrix-flicker-slow 5s ease-in-out infinite;
+      }
+      @keyframes pill-float {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-6px) scale(1.02); }
+      }
+      .pill-capsule-blue { animation: pill-float 4s ease-in-out infinite; }
+      .pill-capsule-red { animation: pill-float 4s ease-in-out 1s infinite; }
+
       /* Apple-style pill nav */
       .pill-nav {
         background: rgba(10,10,10,0.65);
@@ -606,6 +635,126 @@ import '../styles/global.css';
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- ============ MATRIX CHOICE — Escala Básica vs Ejecutiva ============ -->
+      <section id="elige-escala" class="relative py-16 lg:py-24 overflow-hidden">
+        <!-- Matrix rain background -->
+        <div class="matrix-rain-container absolute inset-0 pointer-events-none overflow-hidden">
+          <canvas id="matrix-canvas" class="absolute inset-0 w-full h-full opacity-20"></canvas>
+        </div>
+
+        <!-- Vignette overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 pointer-events-none z-[1]"></div>
+        <div class="absolute inset-0 bg-radial-vignette pointer-events-none z-[1]"></div>
+
+        <!-- Content -->
+        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <!-- Glitch heading -->
+          <div class="mb-4 animate-on-scroll">
+            <span class="inline-block text-xs sm:text-sm font-mono text-green-400/80 tracking-[0.4em] uppercase mb-4 matrix-flicker">[ SISTEMA DE SELECCIÓN ]</span>
+          </div>
+
+          <h2 class="text-3xl sm:text-4xl lg:text-6xl font-black uppercase tracking-tight text-white mb-3 animate-on-scroll matrix-text-glow">
+            Elige tu <span class="text-green-400">destino</span>
+          </h2>
+
+          <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-12 lg:mb-16 animate-on-scroll font-mono">
+            Dos caminos. Una decisión. ¿Cuál es tu oposición?
+          </p>
+
+          <!-- Pills container -->
+          <div class="grid sm:grid-cols-2 gap-6 lg:gap-10 max-w-3xl mx-auto">
+
+            <!-- BLUE PILL — Escala Básica -->
+            <a href="/registro?escala=basica" class="group relative animate-on-scroll">
+              <div class="matrix-pill matrix-pill-blue relative bg-gradient-to-br from-[#0a1628] to-[#0d1f3c] border-2 border-blue-500/30 rounded-3xl p-8 lg:p-10 transition-all duration-500 hover:border-blue-400/60 hover:shadow-[0_0_60px_rgba(59,130,246,0.3)] cursor-pointer overflow-hidden">
+                <!-- Pill glow -->
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-[60px] group-hover:bg-blue-400/30 transition-all duration-500"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <!-- 3D Pill icon -->
+                <div class="relative mx-auto w-20 h-20 lg:w-24 lg:h-24 mb-6">
+                  <div class="pill-capsule pill-capsule-blue w-full h-full rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-blue-700 shadow-[0_0_40px_rgba(59,130,246,0.5),inset_0_-4px_12px_rgba(0,0,0,0.3),inset_0_4px_8px_rgba(255,255,255,0.2)] group-hover:shadow-[0_0_60px_rgba(59,130,246,0.7),inset_0_-4px_12px_rgba(0,0,0,0.3),inset_0_4px_8px_rgba(255,255,255,0.3)] transition-all duration-500 group-hover:scale-110 flex items-center justify-center">
+                    <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-blue-300/20 backdrop-blur-sm border border-blue-200/20"></div>
+                  </div>
+                  <!-- Reflection -->
+                  <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-14 h-4 bg-blue-500/20 rounded-full blur-lg"></div>
+                </div>
+
+                <h3 class="text-xl lg:text-2xl font-black text-white uppercase tracking-wider mb-2 group-hover:text-blue-300 transition-colors">Escala Básica</h3>
+                <p class="text-sm text-blue-300/60 font-mono mb-4">Policía Nacional</p>
+
+                <div class="space-y-2 text-left">
+                  <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                    45 temas del temario oficial
+                  </div>
+                  <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                    +20.000 preguntas tipo test
+                  </div>
+                  <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                    Pruebas físicas incluidas
+                  </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="mt-6 py-2.5 px-6 bg-blue-500/10 border border-blue-500/20 rounded-xl text-sm font-bold text-blue-400 uppercase tracking-wider group-hover:bg-blue-500/20 group-hover:border-blue-400/40 transition-all">
+                  Elegir Escala Básica →
+                </div>
+              </div>
+            </a>
+
+            <!-- RED PILL — Escala Ejecutiva -->
+            <a href="/registro?escala=ejecutiva" class="group relative animate-on-scroll">
+              <div class="matrix-pill matrix-pill-red relative bg-gradient-to-br from-[#1a0a0a] to-[#2d0f0f] border-2 border-red-500/30 rounded-3xl p-8 lg:p-10 transition-all duration-500 hover:border-red-400/60 hover:shadow-[0_0_60px_rgba(239,68,68,0.3)] cursor-pointer overflow-hidden">
+                <!-- Pill glow -->
+                <div class="absolute -top-10 -left-10 w-32 h-32 bg-red-500/20 rounded-full blur-[60px] group-hover:bg-red-400/30 transition-all duration-500"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <!-- 3D Pill icon -->
+                <div class="relative mx-auto w-20 h-20 lg:w-24 lg:h-24 mb-6">
+                  <div class="pill-capsule pill-capsule-red w-full h-full rounded-full bg-gradient-to-br from-red-400 via-red-500 to-red-800 shadow-[0_0_40px_rgba(239,68,68,0.5),inset_0_-4px_12px_rgba(0,0,0,0.3),inset_0_4px_8px_rgba(255,255,255,0.2)] group-hover:shadow-[0_0_60px_rgba(239,68,68,0.7),inset_0_-4px_12px_rgba(0,0,0,0.3),inset_0_4px_8px_rgba(255,255,255,0.3)] transition-all duration-500 group-hover:scale-110 flex items-center justify-center">
+                    <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-red-300/20 backdrop-blur-sm border border-red-200/20"></div>
+                  </div>
+                  <!-- Reflection -->
+                  <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-14 h-4 bg-red-500/20 rounded-full blur-lg"></div>
+                </div>
+
+                <h3 class="text-xl lg:text-2xl font-black text-white uppercase tracking-wider mb-2 group-hover:text-red-300 transition-colors">Escala Ejecutiva</h3>
+                <p class="text-sm text-red-300/60 font-mono mb-4">Inspector / Subinspector</p>
+
+                <div class="space-y-2 text-left">
+                  <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                    Temario específico ejecutiva
+                  </div>
+                  <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                    Casos prácticos y supuestos
+                  </div>
+                  <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                    Preparación integral avanzada
+                  </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="mt-6 py-2.5 px-6 bg-red-500/10 border border-red-500/20 rounded-xl text-sm font-bold text-red-400 uppercase tracking-wider group-hover:bg-red-500/20 group-hover:border-red-400/40 transition-all">
+                  Elegir Escala Ejecutiva →
+                </div>
+              </div>
+            </a>
+
+          </div>
+
+          <!-- Bottom quote -->
+          <p class="mt-10 lg:mt-14 text-sm text-green-400/40 font-mono animate-on-scroll matrix-flicker-slow">
+            "Yo solo puedo mostrarte la puerta. Tú eres quien tiene que atravesarla."
+          </p>
         </div>
       </section>
 
@@ -1692,6 +1841,99 @@ import '../styles/global.css';
       }
       // Safety: reveal after 300ms max even if fonts are slow
       setTimeout(reveal, 300);
+    </script>
+
+    <!-- ============ MATRIX RAIN CANVAS ============ -->
+    <script>
+      (() => {
+        const canvas = document.getElementById('matrix-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const resize = () => {
+          const section = canvas.closest('section');
+          if (!section) return;
+          canvas.width = section.offsetWidth;
+          canvas.height = section.offsetHeight;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+
+        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const fontSize = 14;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = Array(columns).fill(1);
+
+        // Randomize initial drop positions
+        for (let i = 0; i < drops.length; i++) {
+          drops[i] = Math.floor(Math.random() * (canvas.height / fontSize));
+        }
+
+        const draw = () => {
+          // Recalculate columns if canvas resized
+          const newCols = Math.floor(canvas.width / fontSize);
+          if (newCols !== columns) {
+            columns = newCols;
+            drops = Array(columns).fill(1);
+            for (let i = 0; i < drops.length; i++) {
+              drops[i] = Math.floor(Math.random() * (canvas.height / fontSize));
+            }
+          }
+
+          // Semi-transparent black to create trail
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.06)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.font = fontSize + 'px monospace';
+
+          for (let i = 0; i < drops.length; i++) {
+            const char = chars[Math.floor(Math.random() * chars.length)];
+
+            // Head of the stream (brightest)
+            ctx.fillStyle = `rgba(0, 255, 65, ${0.7 + Math.random() * 0.3})`;
+            ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+            // Trail character slightly above (dimmer)
+            if (drops[i] > 1) {
+              const trailChar = chars[Math.floor(Math.random() * chars.length)];
+              ctx.fillStyle = `rgba(0, 180, 50, ${0.1 + Math.random() * 0.2})`;
+              ctx.fillText(trailChar, i * fontSize, (drops[i] - 1) * fontSize);
+            }
+
+            // Reset drop randomly or when off screen
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+              drops[i] = 0;
+            }
+            drops[i]++;
+          }
+        };
+
+        // Only animate when section is visible (performance)
+        const section = canvas.closest('section');
+        let animating = false;
+        let animId;
+
+        const loop = () => {
+          if (!animating) return;
+          draw();
+          animId = requestAnimationFrame(loop);
+        };
+
+        const matrixObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              animating = true;
+              loop();
+            } else {
+              animating = false;
+              if (animId) cancelAnimationFrame(animId);
+            }
+          });
+        }, { threshold: 0.1 });
+
+        if (section) matrixObserver.observe(section);
+      })();
     </script>
 
     <!-- ============ 3D iPhone + GSAP ScrollTrigger ============ -->
